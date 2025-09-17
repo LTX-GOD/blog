@@ -1,0 +1,161 @@
+/* 代码块折叠功能样式 */
+
+/* 代码块容器 */
+.code-block-wrapper {
+  position: relative;
+  margin: 1rem 0;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background: var(--codeblock-bg);
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+}
+
+/* 折叠按钮容器 */
+.code-collapse-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background: var(--codeblock-topbar-bg);
+  border-bottom: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.2s ease;
+}
+
+.code-collapse-header:hover {
+  background: var(--hover-bg, rgba(255, 255, 255, 0.05));
+}
+
+/* 代码块标题 */
+.code-block-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-color);
+}
+
+.code-block-language {
+  background: var(--primary, #3b82f6);
+  color: white;
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* 折叠按钮 */
+.code-collapse-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  color: var(--text-color);
+  cursor: pointer;
+  font-size: 0.875rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  transition: all 0.2s ease;
+}
+
+.code-collapse-button:hover {
+  background: var(--hover-bg, rgba(255, 255, 255, 0.1));
+}
+
+/* 折叠图标 */
+.code-collapse-icon {
+  width: 1rem;
+  height: 1rem;
+  transition: transform 0.2s ease;
+  fill: currentColor;
+}
+
+.code-collapse-icon.collapsed {
+  transform: rotate(-90deg);
+}
+
+/* 代码内容区域 */
+.code-content {
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.code-content.collapsed {
+  max-height: 0;
+  opacity: 0;
+}
+
+.code-content.expanded {
+  max-height: none;
+  opacity: 1;
+}
+
+/* 代码块本身的样式调整 */
+.code-block-wrapper .expressive-code {
+  margin: 0;
+  border-radius: 0;
+  border: none;
+}
+
+.code-block-wrapper .expressive-code .frame {
+  border-radius: 0;
+  border: none;
+  background: transparent;
+}
+
+/* 折叠状态指示器 */
+.code-collapse-indicator {
+  font-size: 0.75rem;
+  color: var(--text-muted, rgba(255, 255, 255, 0.6));
+  font-style: italic;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .code-collapse-header {
+    padding: 0.5rem 0.75rem;
+  }
+  
+  .code-block-title {
+    font-size: 0.8rem;
+  }
+  
+  .code-collapse-button {
+    font-size: 0.8rem;
+    padding: 0.125rem 0.25rem;
+  }
+}
+
+/* 深色主题适配 */
+@media (prefers-color-scheme: dark) {
+  .code-block-wrapper {
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .code-collapse-header {
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* 浅色主题适配 */
+@media (prefers-color-scheme: light) {
+  .code-block-wrapper {
+    border-color: rgba(0, 0, 0, 0.1);
+  }
+  
+  .code-collapse-header {
+    border-bottom-color: rgba(0, 0, 0, 0.1);
+  }
+  
+  .code-collapse-header:hover {
+    background: rgba(0, 0, 0, 0.05);
+  }
+  
+  .code-collapse-button:hover {
+    background: rgba(0, 0, 0, 0.1);
+  }
+}

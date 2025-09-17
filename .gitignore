@@ -29,3 +29,11 @@ yarn.lock
 # ide
 .idea
 *.iml
+.vscode
+
+*.py
+
+public/9f50633778924dc1a069421e946ea90e.txt
+
+src/content/posts/*
+

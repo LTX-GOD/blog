@@ -255,4 +255,4 @@ const codeBlockCollapser = new CodeBlockCollapser();
 
 // 导出到全局作用域（可选）
 window.CodeBlockCollapser = CodeBlockCollapser;
-window.codeBlockCollapser = codeBlockCollapser;å
+window.codeBlockCollapser = codeBlockCollapser;

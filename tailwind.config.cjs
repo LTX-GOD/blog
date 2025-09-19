@@ -6,7 +6,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["Roboto", "sans-serif", ...defaultTheme.fontFamily.sans],
+        sans: ["MonaspaceRadonVarVF", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Source Han Sans SC", "Noto Sans CJK SC", "WenQuanYi Micro Hei", "system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif", ...defaultTheme.fontFamily.sans],
       },
     },
   },

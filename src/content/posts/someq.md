@@ -791,6 +791,565 @@ else:
 
 ```
 
+### 随机数之旅 4
+
+task.py
+
+```python
+from Crypto.Util.number import getPrime
+from Crypto.Util.number import bytes_to_long as b2l
+import random
+import uuid
+
+p=getPrime(32)
+print(p)
+
+flag="flag{"+str(uuid.uuid4())+"}"
+pieces=[flag[i:i+3] for i in range(0,len(flag),3)]
+c=[b2l(i.encode()) for i in pieces]
+
+x=[random.randint(1,p-1) for i in range(14)]
+
+for i in range(100):
+    s=sum(c[i]*x[-14+i] for i in range(14))
+    x.append(s%p)
+
+print(x[-28:])
+```
+
+懒了，ai 一把梭试试（
+
+exp.py
+
+```python
+from Crypto.Util.number import long_to_bytes
+
+p = 3028255493
+ys = [2981540507, 1806477191, 1912594455, 2801509477, 401085215, 818458584, 2397034605, 2120401989, 2008340439, 66147874, 1558789534, 2187085801, 671267991, 2930313508, 924435370, 902711250, 1226810076, 769329795, 2328739529, 1228810265, 1382003520, 1967489557, 2811050420, 1008248532, 1643249997, 639108823, 449982542, 1325050025]
+
+n = 14
+A = [[ys[t+j] % p for j in range(n)] for t in range(n)]
+b = [ys[t+n] % p for t in range(n)]
+
+def modinv(a, mod):
+    return pow(a, mod-2, mod)
+
+def solve_mod(A, b, mod):
+    A = [row[:] for row in A]
+    b = b[:]
+    n = len(A)
+    for i in range(n):
+        pivot = i
+        while pivot < n and A[pivot][i] == 0:
+            pivot += 1
+        if pivot != i:
+            A[i], A[pivot] = A[pivot], A[i]
+            b[i], b[pivot] = b[pivot], b[i]
+        inv = modinv(A[i][i], mod)
+        A[i] = [(val * inv) % mod for val in A[i]]
+        b[i] = (b[i] * inv) % mod
+        for r in range(n):
+            if r != i and A[r][i] != 0:
+                factor = A[r][i]
+                A[r] = [ (A[r][c] - factor * A[i][c]) % mod for c in range(n) ]
+                b[r] = (b[r] - factor * b[i]) % mod
+    return b
+
+c = solve_mod(A, b, p)
+pieces = []
+for val in c:
+    bs = long_to_bytes(val)
+    try:
+        s = bs.decode('utf-8')
+    except:
+        s = bs.decode('latin-1', errors='replace')
+    pieces.append((val, bs, s))
+
+for v,bs,s in pieces:
+    print(v, bs, repr(s))
+
+flag = "".join([s for (_,_,s) in pieces])
+print(flag)
+
+```
+
+### 独一无二
+
+task.py
+
+```python
+# Sage 9.3
+from Crypto.Util.number import bytes_to_long as b2l
+from Crypto.Util.Padding import pad
+from Crypto.Cipher import AES
+from sympy import prevprime
+import uuid
+import random
+import os
+
+d=os.urandom(16)
+D=b2l(d)
+flag = f"flag{{{uuid.uuid4()}}}"
+cipher=AES.new(d,AES.MODE_ECB)
+ct=cipher.encrypt(pad(flag.encode(),16))
+print("ct=",ct)
+
+mes1=b"If you used the same random number when signing,"
+mes2=b" then you need to be careful."
+e1, e2 = b2l(mes1), b2l(mes2)
+
+p=random_prime(2**128)
+A,B=random.randint(1,p-1),random.randint(1,p-1)
+E = EllipticCurve(Zmod(p),[A, B])
+G=E.gens()[0]
+n = prevprime(E.order())
+print("n=",n)
+
+k=random.randint(1,n-1)
+Q=k*G
+r=int(Q[0])%n
+k_inv = pow(k, -1, n)
+assert r!=0
+
+s1 = (k_inv * (e1 + r * D)) % n
+s2 = (k_inv * (e2 + r * D)) % n
+print("(r1,s1)=",(r,s1))
+print("(r2,s2)=",(r,s2))
+```
+
+板子题
+
+exp.py
+
+```python
+from Crypto.Cipher import AES
+from Crypto.Util.number import bytes_to_long as b2l
+from Crypto.Util.number import long_to_bytes as l2b
+from Crypto.Util.Padding import unpad
+
+ct =
+n =
+r =
+s1 =
+s2 =
+
+mes1 = b"If you used the same random number when signing,"
+mes2 = b" then you need to be careful."
+e1, e2 = b2l(mes1), b2l(mes2)
+
+diff_e = (e1 - e2) % n
+diff_s = (s1 - s2) % n
+k = (diff_e * pow(diff_s, -1, n)) % n
+
+D = ((k * s1 - e1) * pow(r, -1, n)) % n
+
+d_bytes = l2b(D).rjust(16, b'\x00')
+
+cipher = AES.new(d_bytes, AES.MODE_ECB)
+pt = unpad(cipher.decrypt(ct), 16)
+
+print("AES key (hex):", d_bytes.hex())
+print("flag:", pt.decode())
+
+
+```
+
+### 共轭迷宫
+
+task.py
+
+```python
+import numpy as np
+from math import sqrt,pi,cos,sin
+import hashlib
+from decimal import Decimal, getcontext
+
+class Quaternion:
+    def __init__(self, w, x, y, z):
+        self.w = w
+        self.x = x
+        self.y = y
+        self.z = z
+
+    def __mul__(self, other):
+        w1, x1, y1, z1 = self.w, self.x, self.y, self.z
+        w2, x2, y2, z2 = other.w, other.x, other.y, other.z
+        w = w1 * w2 - x1 * x2 - y1 * y2 - z1 * z2
+        x = w1 * x2 + x1 * w2 + y1 * z2 - z1 * y2
+        y = w1 * y2 - x1 * z2 + y1 * w2 + z1 * x2
+        z = w1 * z2 + x1 * y2 - y1 * x2 + z1 * w2
+        return Quaternion(w, x, y, z)
+
+
+    def inv(self):
+        norm_sq = self.w**2 + self.x**2 + self.y**2 + self.z**2
+        if abs(norm_sq) < 1e-10:
+            raise ValueError("Cannot invert quaternion with zero norm")
+        return Quaternion(self.w/norm_sq, -self.x/norm_sq, -self.y/norm_sq, -self.z/norm_sq)
+
+    def conjugate(self):
+        return Quaternion(self.w, -self.x, -self.y, -self.z)
+
+    def norm(self):
+        getcontext().prec = 50
+        w = Decimal(self.w)
+        x = Decimal(self.x)
+        y = Decimal(self.y)
+        z = Decimal(self.z)
+        norm_sq = w * w + x * x + y * y + z * z
+        n = norm_sq.sqrt()
+
+        return Quaternion(w/n, x/n, y/n, z/n),norm_sq,n
+
+
+    def __str__(self):
+        return f"{self.w}+{self.x}i+{self.y}j+{self.z}k"
+
+    def __eq__(self, other):
+        return (abs(self.w - other.w) < 1e-10 and
+                abs(self.x - other.x) < 1e-10 and
+                abs(self.y - other.y) < 1e-10 and
+                abs(self.z - other.z) < 1e-10)
+
+
+def generate_weak_private_key(g,angle_degrees=45):
+    getcontext().prec=50
+    x=Decimal(g.x)
+    y=Decimal(g.y)
+    z=Decimal(g.z)
+    g_vector_norm = Decimal(sqrt(x ** 2 + y ** 2 + z ** 2))
+    if g_vector_norm < 1e-10:
+        return Quaternion(np.cos(np.radians(angle_degrees)),
+                          np.sin(np.radians(angle_degrees)), 0, 0).norm()[0]
+    u_x = x / g_vector_norm
+    u_y = y / g_vector_norm
+    u_z = z / g_vector_norm
+
+    angle_rad = Decimal(angle_degrees) * Decimal(pi) / Decimal(180)
+    half_angle = angle_rad / Decimal(2)
+    w = Decimal(cos(float(half_angle)))
+    sin_half = Decimal(sin(float(half_angle)))
+    x = sin_half * u_x
+    y = sin_half * u_y
+    z = sin_half * u_z
+
+    return Quaternion(w, x, y, z)
+
+def encode_flag(flag):
+    flag_bytes = flag
+    parts = [flag_bytes[0:9], flag_bytes[9:18], flag_bytes[18:27], flag_bytes[27:36]]
+    print(parts)
+    return tuple(int.from_bytes(part, 'big') for part in parts)
+
+
+
+
+def main():
+    flag=b'flag{REDACTED}'
+    w, x, y, z = encode_flag(flag)
+    #生成元g
+    g = Quaternion(w, x, y, z)
+    print(g)
+    print(f'norm_squared={g.norm()[1]}')
+    g=g.norm()[0]
+    #Alice的私钥a
+    a = generate_weak_private_key(g)
+    #Alice的公钥P_A
+    P_A = a * g * a.inv()
+    #Bob的私钥b
+    b = generate_weak_private_key(g,60)
+    #Bob的公钥P_B
+    P_B = b * g * b.inv()
+
+    #Alice计算出的共享密钥
+    K_Alice = a * P_B * a.inv()
+    #Bob计算出的共享密钥
+    K_Bob = b * P_A * b.inv()
+
+    print(f'Alice和Bob的共享密钥是否相等: {K_Alice==K_Bob}')
+    print(f'Alice的共享密钥: {K_Alice}')
+
+if __name__ == "__main__":
+    main()
+```
+
+其实做的时候挺迷糊的,exp 后面整理一下再写
+
+### 天虫的秘密
+
+task.py
+
+```python
+
+from Crypto.Util.Padding import pad,unpad
+from Crypto.Cipher import AES
+from secret import FLAG
+import base64
+import os
+
+KEY=os.urandom(16)
+iv1=os.urandom(16)
+cipher=AES.new(KEY,AES.MODE_CBC,iv=iv1)
+ct=cipher.encrypt(pad(FLAG,16))
+print(base64.b64encode(iv1+ct))
+
+def oracle(data_b64: bytes) -> bytes:
+    try:
+        data = base64.b64decode(data_b64.strip())
+        if len(data) < 32 or len(data) % 16 != 0:
+            return b'ERR1\n'
+        iv = data[:16]
+        ct = data[16:]
+        cipher = AES.new(KEY, AES.MODE_CBC, iv)
+        pt = cipher.decrypt(ct)
+        try:
+            unpad(pt, 16)
+            return b'OK\n'
+        except ValueError:
+            return b'ERR2\n'
+    except Exception:
+        return b'ERR3\n'
+
+
+while True:
+    tries=input("Enter what you want to try, format: base64(iv+ct)\n")
+    if tries=="q":
+        break
+    else:
+        print(oracle(tries))
+```
+
+aes 攻击罢了
+
+exp.py
+
+```python
+import socket, base64, re, sys, time
+
+HOST =
+PORT =
+BLOCK = 16
+
+def recv_all_banner(sock):
+    buf = b""
+    sock.settimeout(10)
+    while True:
+        try:
+            chunk = sock.recv(4096)
+            if not chunk:
+                break
+            buf += chunk
+            if b"Enter what you want to try" in buf or b"try, format" in buf:
+                break
+        except socket.timeout:
+            break
+    return buf
+
+def extract_iv_ct(banner_bytes):
+    m = re.search(rb"b'([A-Za-z0-9+/=]+)'", banner_bytes)
+    if not m:
+        m = re.search(rb"([A-Za-z0-9+/=]{32,}={0,2})", banner_bytes)
+    if not m:
+        print("[-] 未找到初始密文的 base64 串。原始输出：")
+        print(banner_bytes.decode(errors="ignore"))
+        sys.exit(1)
+    raw = base64.b64decode(m.group(1))
+    if len(raw) < 32 or len(raw) % 16 != 0:
+        print("[-] 初始密文长度异常。")
+        sys.exit(1)
+    return raw[:BLOCK], [raw[i:i+BLOCK] for i in range(BLOCK, len(raw), BLOCK)]
+
+def recv_until_result(sock, deadline_s=60):
+    end = time.monotonic() + deadline_s
+    buf = b""
+    sock.settimeout(5)  # 单次 recv 最多等 5s，但整体等到 deadline
+    while time.monotonic() < end:
+        try:
+            chunk = sock.recv(4096)
+            if not chunk:
+                raise ConnectionError("连接被对端关闭")
+            buf += chunk
+            if b"OK" in buf:
+                return "OK"
+            if b"ERR1" in buf:
+                return "ERR1"
+            if b"ERR2" in buf:
+                return "ERR2"
+            if b"ERR3" in buf:
+                return "ERR3"
+        except socket.timeout:
+            continue
+    raise TimeoutError("等待服务返回超时")
+
+def oracle(sock, payload_bytes, pause=0.01):
+    b64 = base64.b64encode(payload_bytes) + b"\n"
+    sock.sendall(b64)
+    res = recv_until_result(sock)
+    if pause:
+        time.sleep(pause)
+    return res == "OK"
+
+def decrypt_block(sock, prev_block, block):
+    S = [0] * BLOCK
+    P = bytearray(BLOCK)
+    for pad in range(1, BLOCK+1):  # pad = 1..16
+        i = BLOCK - pad
+        found = None
+
+        base = bytearray(prev_block)
+        for j in range(i+1, BLOCK):
+            base[j] = S[j] ^ pad
+
+        for g in range(256):
+            iv_try = bytearray(base)
+            iv_try[i] = g
+            if oracle(sock, bytes(iv_try) + block):
+                if pad == 1:
+                    iv_try2 = bytearray(iv_try)
+                    iv_try2[0] ^= 1
+                    if not oracle(sock, bytes(iv_try2) + block):
+                        found = g
+                        break
+                    cand = g
+                    iv_try3 = bytearray(iv_try)
+                    iv_try3[1] ^= 1
+                    if not oracle(sock, bytes(iv_try3) + block):
+                        found = g
+                        break
+                    found = cand
+                else:
+                    found = g
+                    break
+
+        if found is None:
+            raise RuntimeError(f"未找到字节 {i} 的候选，可能被限流/断线。")
+
+        S[i] = found ^ pad
+        P[i] = S[i] ^ prev_block[i]
+    return bytes(P)
+
+def pkcs7_unpad(data):
+    k = data[-1]
+    if k < 1 or k > BLOCK or data[-k:] != bytes([k])*k:
+        raise ValueError("bad pad")
+    return data[:-k]
+
+def main():
+    with socket.create_connection((HOST, PORT)) as sock:
+        banner = recv_all_banner(sock)
+        sock.settimeout(None)   # 或 sock.settimeout(30)
+        iv, cblocks = extract_iv_ct(banner)
+        print(f"[+] 拿到 {1+len(cblocks)} 个块（含IV），开始爆破……")
+        pt_blocks = []
+        prev = iv
+        for idx, cb in enumerate(cblocks, 1):
+            print(f"[+] 解密第 {idx}/{len(cblocks)} 块……", flush=True)
+            pt = decrypt_block(sock, prev, cb)
+            pt_blocks.append(pt)
+            prev = cb
+        plaintext = b"".join(pt_blocks)
+        try:
+            m = pkcs7_unpad(plaintext)
+        except Exception:
+            m = plaintext
+        print("\n==== Plaintext ====")
+        try:
+            print(m.decode("utf-8"))
+        except UnicodeDecodeError:
+            print(m)
+        print("===================")
+        try:
+            sock.sendall(b"q\n")
+        except Exception:
+            pass
+
+if __name__ == "__main__":
+    main()
+```
+
+这里交互不太会写，大胆的丢给 ai
+
+### 三重密钥锁
+
+task.py
+
+```python
+import random
+from Crypto.Util.number import *
+# from sage.all import*
+
+
+def encode_flag_to_abc(flag):
+
+    flag_bytes = flag.encode()
+
+    third = len(flag_bytes) // 3
+    a_bytes = flag_bytes[:third]
+    b_bytes = flag_bytes[third:2*third]
+    c_bytes = flag_bytes[2*third:]
+
+    a = bytes_to_long(a_bytes)
+    b = bytes_to_long(b_bytes)
+    c = bytes_to_long(c_bytes)
+
+    return a, b, c
+
+
+
+p = random_prime(2^512, lbound=2^511)
+bitsize = 128
+
+
+a, b, c = encode_flag_to_abc(flag)
+
+
+
+assert a < 2^bitsize and b < 2^bitsize and c < 2^bitsize
+
+
+k = random.randint(1, p-1)
+m = random.randint(1, p-1)
+n = random.randint(1, p-1)
+
+
+f = (k * a + m * b + n * c) % p
+
+print("=== 三重密钥锁（标量版）===")
+print(f"模数 p = {p}")
+print(f"系数 k = {k}")
+print(f"系数 m = {m}")
+print(f"系数 n = {n}")
+print(f"验证值 f = {f}")
+print(f"提示: a,b,c都是大约{bitsize}比特的整数")
+```
+
+也不知道叽叽咕咕说什么呢，LLL 秒了
+
+exp.py
+
+```python
+from Crypto.Util.number import long_to_bytes
+
+p =
+k =
+m =
+n =
+f =
+
+inv_n = inverse_mod(n, p)
+
+D = diagonal_matrix(ZZ, [2^128, 1, 2^32, 2^64])
+L = Matrix(ZZ, [[1, 0, 0, f*inv_n % p],
+                [0, 1, 0, k*inv_n % p],
+                [0, 0, 1, m*inv_n % p],
+                [0, 0, 0, p]]) * D
+
+re = L.LLL()[0]
+print(re)
+
+print(long_to_bytes(re[1])+long_to_bytes(re[2])+long_to_bytes(abs(re[3])))
+```
+
 ## 挑战题
 
 ### [Cry]置换 DLP
@@ -1402,6 +1961,94 @@ mes = c ^ key
 flag = long_to_bytes(mes)
 
 print("\nFlag: {}".format(flag.decode()))
+```
+
+### [Cry]weil 的噪声与秩序
+
+task.py
+
+```python
+from Crypto.Util.number import *
+from Crypto.Util.Padding import pad
+from sage.all import *
+from functools import reduce
+from random import*
 
 
+def mul(numbers):
+    return reduce(lambda x, y: x * y, numbers)
+
+res = []
+
+
+p = res[10]
+pp = mul(res)
+K = GF(p)
+E = EllipticCurve(K, (0, 4))
+
+o=2^2*3^2*12739*41023*212743486005970872224021162564581383306228707471162349947823799966605796835340989758720027890521598136441
+b=[]
+for char in flag:
+    a = bin(char)[2:].zfill(8)
+    for i in a:
+        b.append(i)
+
+
+c=[]
+for l in b:
+    print(l)
+    if l=='1':
+        P = (o//2//2)*E.random_element()
+        Q = (o//2//2)*E.random_element()
+        d=P.weil_pairing(Q, 2)*getrandbits(381)
+        c.append(d)
+    else:
+        P = (o//3//3)*E.random_element()
+        Q = (o//3//3)*E.random_element()
+        d=P.weil_pairing(Q, 3)
+        c.append(d)
+
+with open('c.py','w') as file:
+    file.write(f'{c=}')
+
+```
+
+这个就是简单的配对，判断 01 即可
+
+exp.py
+
+```python
+res = []
+
+p = res[10]
+
+try:
+    with open('c.py', 'r') as file:
+        exec(file.read())
+except FileNotFoundError:
+    exit(1)
+except Exception:
+    exit(1)
+
+bits = ''
+for i, d in enumerate(c):
+    d_mod = d % p
+    if pow(d_mod, 3, p) == 1:
+        bit = '0'
+    else:
+        bit = '1'
+    bits += bit
+
+flag = ''
+bit_length = len(bits)
+if bit_length % 8 != 0:
+    bits += '0' * (8 - bit_length % 8)
+
+for i in range(0, len(bits), 8):
+    byte_bin = bits[i:i+8]
+    char_code = int(byte_bin, 2)
+    char = chr(char_code)
+    flag += char
+
+print(f"{flag}")
 ```

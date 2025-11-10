@@ -1,7 +1,9 @@
-// 代码块折叠功能脚本
+// 代码块折叠功能脚本 - 性能优化版本
 
 class CodeBlockCollapser {
   constructor() {
+    this.processedBlocks = new WeakSet(); // 使用 WeakSet 追踪已处理的元素
+    this.observer = null;
     this.init();
   }
 
@@ -18,11 +20,17 @@ class CodeBlockCollapser {
   }
 
   setupCodeBlocks() {
-    // 查找所有代码块
-    const codeBlocks = document.querySelectorAll('.expressive-code');
-    
-    codeBlocks.forEach((codeBlock, index) => {
-      this.wrapCodeBlock(codeBlock, index);
+    // 使用 requestAnimationFrame 批量处理以提升性能
+    requestAnimationFrame(() => {
+      // 查找所有代码块
+      const codeBlocks = document.querySelectorAll('.expressive-code');
+      
+      codeBlocks.forEach((codeBlock, index) => {
+        if (!this.processedBlocks.has(codeBlock)) {
+          this.wrapCodeBlock(codeBlock, index);
+          this.processedBlocks.add(codeBlock);
+        }
+      });
     });
   }
 
@@ -87,10 +95,17 @@ class CodeBlockCollapser {
     const text = wrapper.querySelector('.collapse-text');
     const indicator = wrapper.querySelector('.code-collapse-indicator');
 
-    // 点击事件
-    header.addEventListener('click', () => {
+    // 使用事件委托优化性能
+    const handleToggle = (e) => {
+      // 阻止按钮的默认行为
+      if (e.target.closest('.code-collapse-button')) {
+        e.preventDefault();
+      }
       this.toggleCollapse(content, icon, text, indicator);
-    });
+    };
+
+    // 点击事件
+    header.addEventListener('click', handleToggle, { passive: false });
 
     // 键盘事件
     header.addEventListener('keydown', (e) => {
@@ -111,23 +126,26 @@ class CodeBlockCollapser {
   toggleCollapse(content, icon, text, indicator) {
     const isCollapsed = content.classList.contains('collapsed');
     
-    if (isCollapsed) {
-      // 展开
-      content.classList.remove('collapsed');
-      content.classList.add('expanded');
-      icon.classList.remove('collapsed');
-      text.textContent = '折叠';
-      indicator.textContent = '点击折叠代码';
-      content.parentElement.querySelector('.code-collapse-header').setAttribute('aria-expanded', 'true');
-    } else {
-      // 折叠
-      content.classList.remove('expanded');
-      content.classList.add('collapsed');
-      icon.classList.add('collapsed');
-      text.textContent = '展开';
-      indicator.textContent = '点击展开代码';
-      content.parentElement.querySelector('.code-collapse-header').setAttribute('aria-expanded', 'false');
-    }
+    // 使用 requestAnimationFrame 优化动画性能
+    requestAnimationFrame(() => {
+      if (isCollapsed) {
+        // 展开
+        content.classList.remove('collapsed');
+        content.classList.add('expanded');
+        icon.classList.remove('collapsed');
+        text.textContent = '折叠';
+        indicator.textContent = '点击折叠代码';
+        content.parentElement.querySelector('.code-collapse-header').setAttribute('aria-expanded', 'true');
+      } else {
+        // 折叠
+        content.classList.remove('expanded');
+        content.classList.add('collapsed');
+        icon.classList.add('collapsed');
+        text.textContent = '展开';
+        indicator.textContent = '点击展开代码';
+        content.parentElement.querySelector('.code-collapse-header').setAttribute('aria-expanded', 'false');
+      }
+    });
 
     // 触发自定义事件
     const event = new CustomEvent('codeBlockToggle', {
@@ -198,8 +216,15 @@ class CodeBlockCollapser {
   }
 
   observePageChanges() {
-    // 使用MutationObserver监听DOM变化
-    const observer = new MutationObserver((mutations) => {
+    // 防止重复创建 observer
+    if (this.observer) {
+      return;
+    }
+
+    // 使用防抖优化 MutationObserver 性能
+    let debounceTimer = null;
+    
+    this.observer = new MutationObserver((mutations) => {
       let shouldReinit = false;
       
       mutations.forEach((mutation) => {
@@ -215,15 +240,25 @@ class CodeBlockCollapser {
       });
 
       if (shouldReinit) {
-        // 延迟执行，确保DOM完全更新
-        setTimeout(() => this.setupCodeBlocks(), 100);
+        // 使用防抖避免频繁调用
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => this.setupCodeBlocks(), 150);
       }
     });
 
-    observer.observe(document.body, {
+    this.observer.observe(document.body, {
       childList: true,
       subtree: true
     });
+  }
+
+  // 销毁方法，用于清理资源
+  destroy() {
+    if (this.observer) {
+      this.observer.disconnect();
+      this.observer = null;
+    }
+    this.processedBlocks = new WeakSet();
   }
 
   // 公共API方法
@@ -256,3 +291,13 @@ const codeBlockCollapser = new CodeBlockCollapser();
 // 导出到全局作用域（可选）
 window.CodeBlockCollapser = CodeBlockCollapser;
 window.codeBlockCollapser = codeBlockCollapser;
+
+// 支持 Swup 页面切换
+if (window.swup) {
+  window.swup.hooks.on('page:view', () => {
+    // 页面切换后重新初始化
+    setTimeout(() => {
+      codeBlockCollapser.setupCodeBlocks();
+    }, 100);
+  });
+}

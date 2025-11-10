@@ -6,7 +6,7 @@ import "@fontsource/roboto/700.css";
 import ConfigCarrier from "@components/ConfigCarrier.astro";
 import MusicPlayer from "@components/widget/MusicPlayer.svelte";
 import Pio from "@components/widget/Pio.svelte"; // 使用 Svelte 版本的 Pio 组件
-import { profileConfig, siteConfig } from "@/config";
+import { profileConfig, siteConfig, musicPlayerConfig, pioConfig } from "@/config";
 import { widgetConfigs } from "../config";
 import { umamiConfig } from "../config.ts";
 import {
@@ -133,8 +133,24 @@ const umamiScripts = umamiConfig.scripts || ""; // 获取Umami scripts配置
 	  data-overlayscrollbars-initialize
 >
 	<head>
-		<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-KRX3XGVH');</script>
-		<script type="text/javascript">(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window, document, "clarity", "script", "tjr3vkhj8i");</script>
+		<!-- 第三方分析脚本 - 延迟加载优化 -->
+		<script is:inline>
+			// 使用 requestIdleCallback 延迟加载第三方脚本
+			function loadAnalytics() {
+				// Google Tag Manager
+				(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-KRX3XGVH');
+				
+				// Clarity
+				(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window, document, "clarity", "script", "tjr3vkhj8i");
+			}
+			
+			// 在浏览器空闲时加载，或者在 3 秒后加载
+			if ('requestIdleCallback' in window) {
+				requestIdleCallback(loadAnalytics, { timeout: 3000 });
+			} else {
+				setTimeout(loadAnalytics, 3000);
+			}
+		</script>
 
 		<title>{pageTitle}</title>
 
@@ -220,8 +236,8 @@ const umamiScripts = umamiConfig.scripts || ""; // 获取Umami scripts配置
 
 		<slot name="head"></slot>
 
-		<!-- Pio 看板娘样式 -->
-		<link rel="stylesheet" href="/pio/static/pio.css" />
+		<!-- Pio 看板娘样式 - 仅在启用时加载 -->
+		{pioConfig.enable && <link rel="stylesheet" href="/pio/static/pio.css" />}
 
 		<link rel="alternate" type="application/rss+xml" title={profileConfig.name} href={`${Astro.site}rss.xml`}/>
 
@@ -239,13 +255,11 @@ const umamiScripts = umamiConfig.scripts || ""; // 获取Umami scripts配置
 		<ConfigCarrier></ConfigCarrier>
 		<slot />
 		
-		<!-- Music Player -->
-		<MusicPlayer client:load />
+		<!-- Music Player - 仅在启用时加载 -->
+		{musicPlayerConfig.enable && <MusicPlayer client:load />}
 		
-		<!-- Pio 看板娘组件 -->
-		<!-- 注意：Pio 组件需要放在 body 标签内，但要在其他内容之前 -->
-		<!-- 如果启用了侧边栏，可能需要调整 z-index -->
-		<Pio client:load />
+		<!-- Pio 看板娘组件 - 仅在启用时加载 -->
+		{pioConfig.enable && <Pio client:load />}
 		
 		<!-- increase the page height during page transition to prevent the scrolling animation from jumping -->
 		<div id="page-height-extend" class="hidden h-[300vh]"></div>
@@ -1239,183 +1253,105 @@ if (document.readyState === 'loading') {
 
 </script>
 
+<!-- 代码块折叠功能 -->
+<script>
+import '../scripts/code-collapse.js';
+import '../styles/expressive-code.css';
+</script>
+
 <script>
 import { Fancybox } from "@fancyapps/ui";
 import "@fancyapps/ui/dist/fancybox/fancybox.css";
 
+// 使用单例模式避免重复初始化
+let fancyboxInstances = [];
+
 function initFancybox() {
-  // 销毁现有的 Fancybox 实例（如果存在）
-  Fancybox.close();
+  // 不需要关闭所有实例，只需检查是否已经初始化
+  if (fancyboxInstances.length > 0) {
+    return; // 已经初始化，直接返回
+  }
+  
+  // 通用配置
+  const commonConfig = {
+    Thumbs: {
+      autoStart: true,
+      showOnStart: "yes",
+    },
+    Toolbar: {
+      display: {
+        left: ["infobar"],
+        middle: [
+          "zoomIn",
+          "zoomOut",
+          "toggle1to1",
+          "rotateCCW",
+          "rotateCW",
+          "flipX",
+          "flipY",
+        ],
+        right: ["slideshow", "thumbs", "close"],
+      },
+    },
+    animated: true,
+    dragToClose: true,
+    keyboard: {
+      Escape: "close",
+      Delete: "close",
+      Backspace: "close",
+      PageUp: "next",
+      PageDown: "prev",
+      ArrowUp: "next",
+      ArrowDown: "prev",
+      ArrowRight: "next",
+      ArrowLeft: "prev",
+    },
+    fitToView: true,
+    preload: 3,
+    infinite: true,
+    Panzoom: {
+      maxScale: 3,
+      minScale: 1,
+    },
+    caption: false
+  };
   
   // 为相册图片添加 Fancybox 支持
-  Fancybox.bind(".custom-md img, #post-cover img, .moment-images img", {
-    groupAll: true,
-    Thumbs: {
-      autoStart: true,
-      showOnStart: "yes",
-    },
-    // 添加自定义按钮
-    Toolbar: {
-      display: {
-        left: ["infobar"],
-        middle: [
-          "zoomIn",
-          "zoomOut",
-          "toggle1to1",
-          "rotateCCW",
-          "rotateCW",
-          "flipX",
-          "flipY",
-        ],
-        right: ["slideshow", "thumbs", "close"],
+  fancyboxInstances.push(
+    Fancybox.bind(".custom-md img, #post-cover img, .moment-images img", {
+      ...commonConfig,
+      groupAll: true,
+      Carousel: {
+        transition: "slide",
+        preload: 2,
       },
-    },
-    // 动画效果
-    animated: true,
-    // 是否支持拖拽
-    dragToClose: true,
-    // 是否支持键盘导航
-    keyboard: {
-      Escape: "close",
-      Delete: "close",
-      Backspace: "close",
-      PageUp: "next",
-      PageDown: "prev",
-      ArrowUp: "next",
-      ArrowDown: "prev",
-      ArrowRight: "next",
-      ArrowLeft: "prev",
-    },
-    // 自适应图片大小
-    fitToView: true,
-    // 图片预加载
-    preload: 3,
-    // 循环浏览
-    infinite: true,
-    // 智能图片适配
-    Panzoom: {
-      maxScale: 3,
-      minScale: 1,
-    },
-    // 幻灯片设置
-    Carousel: {
-      transition: "slide",
-      preload: 2,
-    },
-    // 禁用标题显示
-    caption: false
-  });
+    })
+  );
   
   // 为相册中的链接添加 Fancybox 支持
-  Fancybox.bind(".moment-images a[data-fancybox]", {
-    Thumbs: {
-      autoStart: true,
-      showOnStart: "yes",
-    },
-    // 工具栏配置
-    Toolbar: {
-      display: {
-        left: ["infobar"],
-        middle: [
-          "zoomIn",
-          "zoomOut",
-          "toggle1to1",
-          "rotateCCW",
-          "rotateCW",
-          "flipX",
-          "flipY",
-        ],
-        right: ["slideshow", "thumbs", "close"],
+  fancyboxInstances.push(
+    Fancybox.bind(".moment-images a[data-fancybox]", {
+      ...commonConfig,
+      source: (el) => {
+        return el.getAttribute("data-src") || el.getAttribute("href");
       },
-    },
-    // 动画效果
-    animated: true,
-    // 是否支持拖拽
-    dragToClose: true,
-    // 是否支持键盘导航
-    keyboard: {
-      Escape: "close",
-      Delete: "close",
-      Backspace: "close",
-      PageUp: "next",
-      PageDown: "prev",
-      ArrowUp: "next",
-      ArrowDown: "prev",
-      ArrowRight: "next",
-      ArrowLeft: "prev",
-    },
-    // 自适应图片大小
-    fitToView: true,
-    // 图片预加载
-    preload: 3,
-    // 循环浏览
-    infinite: true,
-    // 智能图片适配
-    Panzoom: {
-      maxScale: 3,
-      minScale: 1,
-    },
-    // 自定义源获取
-    source: (el) => {
-      return el.getAttribute("data-src") || el.getAttribute("href");
-    },
-    // 禁用标题显示
-    caption: false
-  });
+    })
+  );
   
   // 为单独的 fancybox 图片添加支持
-  Fancybox.bind("[data-fancybox]:not(.moment-images a)", {
-    // 自定义选项
-    Thumbs: {
-      autoStart: true,
-      showOnStart: "yes",
-    },
-    // 工具栏配置
-    Toolbar: {
-      display: {
-        left: ["infobar"],
-        middle: [
-          "zoomIn",
-          "zoomOut",
-          "toggle1to1",
-          "rotateCCW",
-          "rotateCW",
-          "flipX",
-          "flipY",
-        ],
-        right: ["slideshow", "thumbs", "close"],
-      },
-    },
-    // 动画效果
-    animated: true,
-    // 是否支持拖拽
-    dragToClose: true,
-    // 是否支持键盘导航
-    keyboard: {
-      Escape: "close",
-      Delete: "close",
-      Backspace: "close",
-      PageUp: "next",
-      PageDown: "prev",
-      ArrowUp: "next",
-      ArrowDown: "prev",
-      ArrowRight: "next",
-      ArrowLeft: "prev",
-    },
-    // 自适应图片大小
-    fitToView: true,
-    // 图片预加载
-    preload: 3,
-    // 循环浏览
-    infinite: true,
-    // 智能图片适配
-    Panzoom: {
-      maxScale: 3,
-      minScale: 1,
-    },
-    // 禁用标题显示
-    caption: false
+  fancyboxInstances.push(
+    Fancybox.bind("[data-fancybox]:not(.moment-images a)", commonConfig)
+  );
+}
+
+// 清理 Fancybox 实例
+function cleanupFancybox() {
+  fancyboxInstances.forEach(instance => {
+    if (instance && typeof instance.destroy === 'function') {
+      instance.destroy();
+    }
   });
+  fancyboxInstances = [];
 }
 
 const setup = () => {
@@ -1424,10 +1360,12 @@ const setup = () => {
   
   // 在页面视图更改时重新初始化
   window.swup.hooks.on("page:view", () => {
+    // 清理旧实例
+    cleanupFancybox();
     // 等待 DOM 更新后初始化
-    setTimeout(() => {
+    requestAnimationFrame(() => {
       initFancybox();
-    }, 100);
+    });
   });
 }
 

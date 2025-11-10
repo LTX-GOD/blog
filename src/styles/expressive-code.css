@@ -7,3 +7,187 @@
         font-family: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     }
 }
+
+/* 代码块折叠样式 - 简洁设计 */
+.code-block-wrapper {
+    @apply relative mb-6 rounded-xl overflow-hidden;
+    background: var(--codeblock-bg);
+    border: 1px solid rgba(156, 163, 175, 0.06);
+    transition: all 0.2s ease;
+}
+
+.code-block-wrapper:hover {
+    border-color: rgba(var(--primary-rgb, 59, 130, 246), 0.12);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.code-collapse-header {
+    @apply flex items-center justify-between px-4 py-2 cursor-pointer;
+    background: rgba(var(--primary-rgb, 59, 130, 246), 0.02);
+    border-bottom: 1px solid rgba(156, 163, 175, 0.06);
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.code-collapse-header:hover {
+    background: rgba(var(--primary-rgb, 59, 130, 246), 0.04);
+    border-bottom-color: rgba(var(--primary-rgb, 59, 130, 246), 0.1);
+}
+
+.code-collapse-header:focus-visible {
+    outline: 1px solid var(--primary);
+    outline-offset: -1px;
+}
+
+.code-block-title {
+    @apply flex items-center gap-2.5 flex-1;
+}
+
+.code-block-language {
+    @apply font-medium text-xs;
+    color: var(--primary);
+    font-family: "JetBrains Mono Variable", monospace;
+    opacity: 0.85;
+}
+
+.code-collapse-indicator {
+    @apply text-xs font-normal opacity-40;
+    transition: opacity 0.2s ease;
+}
+
+.code-collapse-header:hover .code-collapse-indicator {
+    @apply opacity-60;
+}
+
+.code-collapse-button {
+    @apply flex items-center gap-1.5 px-2.5 py-1 rounded-md;
+    background: rgba(var(--primary-rgb, 59, 130, 246), 0.06);
+    color: var(--primary);
+    border: 1px solid rgba(var(--primary-rgb, 59, 130, 246), 0.1);
+    transition: all 0.2s ease;
+    font-size: 0.7rem;
+    font-weight: 500;
+    opacity: 0.85;
+}
+
+.code-collapse-button:hover {
+    background: rgba(var(--primary-rgb, 59, 130, 246), 0.1);
+    border-color: rgba(var(--primary-rgb, 59, 130, 246), 0.2);
+    opacity: 1;
+}
+
+.code-collapse-button:active {
+    transform: scale(0.98);
+}
+
+.code-collapse-icon {
+    @apply w-3.5 h-3.5;
+    transition: transform 0.3s ease;
+    opacity: 0.7;
+}
+
+.code-collapse-icon.collapsed {
+    transform: rotate(-180deg);
+}
+
+.collapse-text {
+    font-family: "JetBrains Mono Variable", monospace;
+}
+
+/* 代码内容容器 - 简洁过渡 */
+.code-content {
+    @apply overflow-hidden;
+    transition: max-height 0.3s ease,
+                opacity 0.25s ease;
+}
+
+.code-content.expanded {
+    max-height: none; /* 完全展开，不限制高度 */
+    opacity: 1;
+}
+
+.code-content.collapsed {
+    max-height: 6rem; /* 折叠时显示约4-5行代码 */
+    opacity: 0.9;
+    position: relative;
+}
+
+/* 渐变遮罩 - 柔和过渡 */
+.code-content.collapsed::after {
+    content: '';
+    @apply absolute bottom-0 left-0 right-0;
+    height: 2.5rem;
+    background: linear-gradient(to bottom, 
+        transparent 0%, 
+        var(--codeblock-bg) 80%
+    );
+    pointer-events: none;
+}
+
+/* 确保代码块本身不会溢出 */
+.code-content .expressive-code {
+    @apply !mb-0;
+}
+
+/* 折叠状态下的代码块 */
+.code-content.collapsed .expressive-code {
+    overflow: hidden;
+}
+
+/* 响应式优化 - 移动端适配 */
+@media (max-width: 768px) {
+    .code-collapse-header {
+        @apply px-3 py-1.5;
+    }
+    
+    .code-block-language {
+        @apply text-xs;
+    }
+    
+    .code-collapse-indicator {
+        @apply hidden;
+    }
+    
+    .code-collapse-button {
+        @apply px-2 py-0.5 text-xs gap-1;
+    }
+    
+    .code-collapse-icon {
+        @apply w-3 h-3;
+    }
+    
+    .code-content.collapsed {
+        max-height: 3.5rem;
+    }
+}
+
+/* 深色模式适配 - 简洁对比 */
+@media (prefers-color-scheme: dark) {
+    .code-block-wrapper {
+        border-color: rgba(255, 255, 255, 0.06);
+    }
+    
+    .code-block-wrapper:hover {
+        border-color: rgba(var(--primary-rgb, 59, 130, 246), 0.15);
+    }
+    
+    .code-collapse-header {
+        border-bottom-color: rgba(255, 255, 255, 0.06);
+    }
+}
+
+/* 打印样式 - 自动展开所有代码块 */
+@media print {
+    .code-content.collapsed {
+        max-height: none !important;
+        opacity: 1 !important;
+    }
+    
+    .code-content.collapsed::after {
+        display: none;
+    }
+    
+    .code-collapse-header {
+        display: none;
+    }
+}

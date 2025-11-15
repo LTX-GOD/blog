@@ -27,7 +27,7 @@ import { remarkMermaid } from "./src/plugins/remark-mermaid.js";
 import { remarkReadingTime } from "./src/plugins/remark-reading-time.mjs";
 // https://astro.build/config
 export default defineConfig({
-	site: siteConfig.siteURL,
+	site: "https://www.zhuangsanmeng.xyz/",
 
 	base: "/",
 	trailingSlash: "always",
@@ -79,6 +79,18 @@ export default defineConfig({
 				overridesByLang: {
 					shellsession: {
 						showLineNumbers: false,
+					},
+					bash: {
+						frame: 'code',
+					},
+					shell: {
+						frame: 'code',
+					},
+					sh: {
+						frame: 'code',
+					},
+					zsh: {
+						frame: 'code',
 					},
 				},
 			},

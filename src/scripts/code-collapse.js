@@ -31,6 +31,10 @@ class CodeBlockCollapser {
     const frame = codeBlock.querySelector('.frame');
     if (!frame) return;
     
+    if (frame.classList.contains('has-title')) {
+      return;
+    }
+    
     codeBlock.classList.add('collapsible', 'expanded');
     
     const toggleBtn = this.createToggleButton();

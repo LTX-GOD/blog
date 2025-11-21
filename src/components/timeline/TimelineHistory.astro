@@ -1,0 +1,148 @@
+---
+import { i18n } from "../../i18n/translation";
+import I18nKey from "../../i18n/i18nKey";
+import Icon from "../misc/Icon.astro";
+
+interface TimelineItem {
+  title: string;
+  type: string;
+  organization?: string;
+  position?: string;
+  location?: string;
+  description: string;
+  startDate: string;
+  endDate?: string;
+  icon?: string;
+  color?: string;
+  skills?: string[];
+  achievements?: string[];
+  links?: Array<{ name: string; url: string; type?: string }>;
+}
+
+interface Props {
+  items: TimelineItem[];
+  getTypeIcon: (type: string) => string;
+  formatDate: (dateString: string) => string;
+  getDuration: (startDate: string, endDate?: string) => string;
+}
+
+const { items, getTypeIcon, formatDate, getDuration } = Astro.props;
+---
+
+<div class="mb-8">
+  <h2 class="text-2xl font-bold text-black/90 dark:text-white/90 mb-6">
+    {i18n(I18nKey.timelineHistory)}
+  </h2>
+  <div class="relative">
+    <!-- 时间线主轴 -->
+    <div class="absolute left-6 top-0 bottom-0 w-0.5 bg-gray-200 dark:bg-gray-700"></div>
+    
+    <div class="space-y-8">
+      {items.map((item, index) => (
+        <div class="relative flex items-start gap-6">
+          <!-- 时间线节点 -->
+          <div class="relative z-10 w-12 h-12 rounded-full flex items-center justify-center" style={`background-color: ${item.color || 'rgb(99 102 241)'}`}>
+            <Icon 
+              icon={item.icon || getTypeIcon(item.type)} 
+              class="text-xl text-white" 
+              color="white"
+              fallback={item.title.charAt(0)}
+              loading="eager"
+            />
+          </div>
+          
+          <!-- 内容卡片 -->
+          <div class="flex-1 bg-white dark:bg-gray-800 rounded-lg border border-black/10 dark:border-white/10 p-6 hover:shadow-lg transition-shadow duration-300">
+            <div class="flex items-start justify-between mb-3">
+              <div>
+                <h3 class="text-xl font-semibold text-black/90 dark:text-white/90 mb-1">
+                  {item.title}
+                </h3>
+                {item.organization && (
+                  <div class="text-sm text-black/70 dark:text-white/70">
+                    {item.organization} {item.position && `• ${item.position}`}
+                  </div>
+                )}
+              </div>
+              <span class={`px-2 py-1 text-xs rounded-full ${
+                item.type === 'education' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' :
+                item.type === 'work' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
+                item.type === 'project' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400' :
+                'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'
+              }`}>
+                {i18n(item.type === 'education' ? I18nKey.timelineEducation :
+                      item.type === 'work' ? I18nKey.timelineWork :
+                      item.type === 'project' ? I18nKey.timelineProject :
+                      I18nKey.timelineAchievement)}
+              </span>
+            </div>
+            
+            <div class="flex items-center gap-4 mb-3 text-sm text-black/60 dark:text-white/60">
+              <div>
+                {formatDate(item.startDate)} - {item.endDate ? formatDate(item.endDate) : i18n(I18nKey.timelinePresent)}
+              </div>
+              <div>•</div>
+              <div>{getDuration(item.startDate, item.endDate)}</div>
+              {item.location && (
+                <>
+                  <div>•</div>
+                  <div>📍 {item.location}</div>
+                </>
+              )}
+            </div>
+            
+            <p class="text-black/70 dark:text-white/70 mb-4">
+              {item.description}
+            </p>
+            
+            {item.achievements && item.achievements.length > 0 && (
+              <div class="mb-4">
+                <h4 class="text-sm font-semibold text-black/80 dark:text-white/80 mb-2">
+                  {i18n(I18nKey.timelineAchievements)}
+                </h4>
+                <ul class="space-y-1">
+                  {item.achievements.map((achievement) => (
+                    <li class="text-sm text-black/70 dark:text-white/70 flex items-start gap-2">
+                      <span class="text-green-500 mt-1">•</span>
+                      <span>{achievement}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            
+            {item.skills && item.skills.length > 0 && (
+              <div class="mb-4">
+                <div class="flex flex-wrap gap-1">
+                  {item.skills.map((skill) => (
+                    <span class="px-2 py-1 text-xs bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300 rounded">
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {item.links && item.links.length > 0 && (
+              <div class="flex gap-4">
+                {item.links.map((link) => (
+                  <a 
+                    href={link.url} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    class="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium flex items-center gap-1"
+                  >
+                    {link.type === 'certificate' && '🏆'}
+                    {link.type === 'project' && '🔗'}
+                    {link.type === 'website' && '🌐'}
+                    {link.name}
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</div>

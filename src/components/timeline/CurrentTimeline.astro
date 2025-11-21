@@ -1,0 +1,103 @@
+---
+import { i18n } from "../../i18n/translation";
+import I18nKey from "../../i18n/i18nKey";
+import Icon from "../misc/Icon.astro";
+
+interface TimelineItem {
+  title: string;
+  type: string;
+  organization?: string;
+  position?: string;
+  location?: string;
+  description: string;
+  startDate: string;
+  endDate?: string;
+  icon?: string;
+  color?: string;
+  skills?: string[];
+  links?: Array<{ name: string; url: string; type?: string }>;
+}
+
+interface Props {
+  items: TimelineItem[];
+  getTypeIcon: (type: string) => string;
+  formatDate: (dateString: string) => string;
+  getDuration: (startDate: string, endDate?: string) => string;
+}
+
+const { items, getTypeIcon, formatDate, getDuration } = Astro.props;
+---
+
+{items.length > 0 && (
+  <div class="mb-8">
+    <h2 class="text-2xl font-bold text-black/90 dark:text-white/90 mb-4">
+      {i18n(I18nKey.timelineCurrent)}
+    </h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {items.map((item) => (
+        <div class="bg-white dark:bg-gray-800 rounded-lg border border-black/10 dark:border-white/10 p-6 hover:shadow-lg transition-shadow duration-300">
+          <div class="flex items-start gap-4">
+            <div class="w-12 h-12 rounded-lg flex items-center justify-center" style={`background-color: ${item.color || 'rgb(99 102 241)'}20`}>
+              <Icon 
+                icon={item.icon || getTypeIcon(item.type)} 
+                class="text-2xl" 
+                color={item.color || 'rgb(99 102 241)'}
+                fallback={item.title.charAt(0)}
+                loading="eager"
+              />
+            </div>
+            <div class="flex-1">
+              <div class="flex items-start justify-between mb-2">
+                <h3 class="text-xl font-semibold text-black/90 dark:text-white/90">
+                  {item.title}
+                </h3>
+                <span class="px-2 py-1 text-xs bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 rounded-full">
+                  {i18n(I18nKey.timelineCurrent)}
+                </span>
+              </div>
+              {item.organization && (
+                <div class="text-sm text-black/70 dark:text-white/70 mb-1">
+                  {item.organization} {item.position && `• ${item.position}`}
+                </div>
+              )}
+              {item.location && (
+                <div class="text-sm text-black/60 dark:text-white/60 mb-2">
+                  📍 {item.location}
+                </div>
+              )}
+              <p class="text-black/60 dark:text-white/60 mb-3 text-sm">
+                {item.description}
+              </p>
+              <div class="text-sm text-black/70 dark:text-white/70 mb-3">
+                {formatDate(item.startDate)} - {i18n(I18nKey.timelinePresent)} ({getDuration(item.startDate)})
+              </div>
+              {item.skills && item.skills.length > 0 && (
+                <div class="flex flex-wrap gap-1 mb-3">
+                  {item.skills.map((skill) => (
+                    <span class="px-2 py-1 text-xs bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400 rounded">
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              )}
+              {item.links && item.links.length > 0 && (
+                <div class="flex gap-3">
+                  {item.links.map((link) => (
+                    <a 
+                      href={link.url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      class="text-indigo-600 dark:text-indigo-400 hover:underline text-sm font-medium"
+                    >
+                      {link.name}
+                    </a>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+)}

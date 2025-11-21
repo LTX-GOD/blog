@@ -15,6 +15,12 @@
   font-display: swap;
 }
 
+:root {
+    --color-default-blue: #3B82F6;
+    --color-default-red: #ef4444;
+    --color-default-green: #10b981;
+}
+
 
 
 /* 导入 Hanalei 字体 */

@@ -1,0 +1,91 @@
+---
+import { i18n } from "../../i18n/translation";
+import I18nKey from "../../i18n/i18nKey";
+
+interface Props {
+  stats: {
+    total: number;
+    byType: {
+      education: number;
+      work: number;
+      project: number;
+      achievement: number;
+    };
+  };
+  workExperience: {
+    years: number;
+    months: number;
+  };
+  currentItems: Array<{ type: string }>;
+}
+
+const { stats, workExperience, currentItems } = Astro.props;
+---
+
+<div class="mt-12 pt-8 border-t border-black/10 dark:border-white/10">
+  <h2 class="text-2xl font-bold text-black/90 dark:text-white/90 mb-6">
+    {i18n(I18nKey.timelineStatistics)}
+  </h2>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <!-- 按类型分布 -->
+    <div>
+      <h3 class="text-lg font-semibold text-black/80 dark:text-white/80 mb-4">
+        {i18n(I18nKey.timelineByType)}
+      </h3>
+      <div class="space-y-3">
+        {Object.entries(stats.byType).map(([type, count]) => {
+          const percentage = Math.round((count / stats.total) * 100);
+          return (
+            <div class="flex items-center gap-3">
+              <div class="w-20 text-sm text-black/70 dark:text-white/70">
+                {i18n(type === 'education' ? I18nKey.timelineEducation :
+                      type === 'work' ? I18nKey.timelineWork :
+                      type === 'project' ? I18nKey.timelineProject :
+                      I18nKey.timelineAchievement)}
+              </div>
+              <div class="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                <div 
+                  class={`h-2 rounded-full transition-all duration-500 ${
+                    type === 'education' ? 'bg-blue-500' :
+                    type === 'work' ? 'bg-green-500' :
+                    type === 'project' ? 'bg-purple-500' :
+                    'bg-orange-500'
+                  }`}
+                  style={`width: ${percentage}%`}
+                ></div>
+              </div>
+              <div class="w-12 text-sm text-black/70 dark:text-white/70 text-right">
+                {count}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+    
+    <!-- 工作经验详情 -->
+    <div>
+      <h3 class="text-lg font-semibold text-black/80 dark:text-white/80 mb-4">
+        {i18n(I18nKey.timelineWorkExperience)}
+      </h3>
+      <div class="space-y-3">
+        <div class="flex justify-between items-center">
+          <span class="text-black/70 dark:text-white/70">{i18n(I18nKey.timelineTotalExperience)}</span>
+          <span class="font-semibold text-black/90 dark:text-white/90">
+            {workExperience.years} {i18n(I18nKey.timelineYears)} {workExperience.months} {i18n(I18nKey.timelineMonths)}
+          </span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-black/70 dark:text-white/70">{i18n(I18nKey.timelineWorkPositions)}</span>
+          <span class="font-semibold text-black/90 dark:text-white/90">{stats.byType.work}</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-black/70 dark:text-white/70">{i18n(I18nKey.timelineCurrentRole)}</span>
+          <span class="font-semibold text-black/90 dark:text-white/90">
+            {currentItems.filter(item => item.type === 'work').length > 0 ? i18n(I18nKey.timelineEmployed) : i18n(I18nKey.timelineAvailable)}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

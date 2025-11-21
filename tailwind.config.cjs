@@ -8,6 +8,11 @@ module.exports = {
       fontFamily: {
         sans: ["Roboto", "sans-serif", ...defaultTheme.fontFamily.sans],
       },
+      colors: {
+        'default-blue': 'var(--color-default-blue)',
+        'default-red': 'var(--color-default-red)',
+        'default-green': 'var(--color-default-green)',
+      },
     },
   },
   plugins: [require("@tailwindcss/typography")],

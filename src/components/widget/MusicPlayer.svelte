@@ -364,7 +364,7 @@ onDestroy(() => {
 {#if musicPlayerConfig.enable}
 {#if showError}
 <div class="fixed bottom-20 right-4 z-[60] max-w-sm">
-    <div class="bg-red-500 text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 animate-slide-up">
+    <div class="bg-red-500 text-white px-4 py-3 rounded-[var(--radius-large)] shadow-lg flex items-center gap-3 animate-slide-up">
         <Icon icon="material-symbols:error" class="text-xl flex-shrink-0" />
         <span class="text-sm flex-1">{errorMessage}</span>
         <button on:click={hideError} class="text-white/80 hover:text-white transition-colors">
@@ -405,7 +405,7 @@ onDestroy(() => {
         {/if}
     </div>
     <!-- 收缩状态的迷你播放器（封面圆形） -->
-    <div class="mini-player card-base bg-[var(--float-panel-bg)] shadow-xl rounded-2xl p-3 transition-all duration-500 ease-in-out"
+    <div class="mini-player card-base bg-[var(--float-panel-bg)] shadow-xl rounded-[var(--radius-large)] p-3 transition-all duration-500 ease-in-out"
          class:opacity-0={isExpanded || isHidden}
          class:scale-95={isExpanded || isHidden}
          class:pointer-events-none={isExpanded || isHidden}
@@ -440,12 +440,12 @@ onDestroy(() => {
                 <div class="text-xs text-50 truncate">{currentSong.artist}</div>
             </div>
             <div class="flex items-center gap-1">
-                <button class="btn-plain w-8 h-8 rounded-lg flex items-center justify-center"
+                <button class="btn-plain w-8 h-8 rounded-[var(--radius-large)] flex items-center justify-center"
                         on:click|stopPropagation={toggleHidden}
                         title="隐藏播放器">
                     <Icon icon="material-symbols:visibility-off" class="text-lg" />
                 </button>
-                <button class="btn-plain w-8 h-8 rounded-lg flex items-center justify-center"
+                <button class="btn-plain w-8 h-8 rounded-[var(--radius-large)] flex items-center justify-center"
                         on:click|stopPropagation={toggleExpanded}>
                     <Icon icon="material-symbols:expand-less" class="text-lg" />
                 </button>
@@ -453,7 +453,7 @@ onDestroy(() => {
         </div>
     </div>
     <!-- 展开状态的完整播放器（封面圆形） -->
-    <div class="expanded-player card-base bg-[var(--float-panel-bg)] shadow-xl rounded-2xl p-4 transition-all duration-500 ease-in-out"
+    <div class="expanded-player card-base bg-[var(--float-panel-bg)] shadow-xl rounded-[var(--radius-large)] p-4 transition-all duration-500 ease-in-out"
          class:opacity-0={!isExpanded}
          class:scale-95={!isExpanded}
          class:pointer-events-none={!isExpanded}>
@@ -472,12 +472,12 @@ onDestroy(() => {
                 </div>
             </div>
             <div class="flex items-center gap-1">
-                <button class="btn-plain w-8 h-8 rounded-lg flex items-center justify-center"
+                <button class="btn-plain w-8 h-8 rounded-[var(--radius-large)] flex items-center justify-center"
                         on:click={toggleHidden}
                         title="隐藏播放器">
                     <Icon icon="material-symbols:visibility-off" class="text-lg" />
                 </button>
-                <button class="btn-plain w-8 h-8 rounded-lg flex items-center justify-center"
+                <button class="btn-plain w-8 h-8 rounded-[var(--radius-large)] flex items-center justify-center"
                         on:click={toggleExpanded}>
                     <Icon icon="material-symbols:expand-more" class="text-lg" />
                 </button>
@@ -511,14 +511,14 @@ onDestroy(() => {
         </div>
         <div class="controls flex items-center justify-center gap-2 mb-4">
             <!-- 随机按钮高亮 -->
-            <button class="w-10 h-10 rounded-lg"
+            <button class="w-10 h-10 rounded-[var(--radius-large)]"
                     class:btn-regular={isShuffled}
                     class:btn-plain={!isShuffled}
                     on:click={toggleShuffle}
                     disabled={playlist.length <= 1}>
                 <Icon icon="material-symbols:shuffle" class="text-lg" />
             </button>
-            <button class="btn-plain w-10 h-10 rounded-lg" on:click={previousSong}
+            <button class="btn-plain w-10 h-10 rounded-[var(--radius-large)]" on:click={previousSong}
                     disabled={playlist.length <= 1}>
                 <Icon icon="material-symbols:skip-previous" class="text-xl" />
             </button>
@@ -534,12 +534,12 @@ onDestroy(() => {
                     <Icon icon="material-symbols:play-arrow" class="text-xl" />
                 {/if}
             </button>
-            <button class="btn-plain w-10 h-10 rounded-lg" on:click={nextSong}
+            <button class="btn-plain w-10 h-10 rounded-[var(--radius-large)]" on:click={nextSong}
                     disabled={playlist.length <= 1}>
                 <Icon icon="material-symbols:skip-next" class="text-xl" />
             </button>
             <!-- 循环按钮高亮 -->
-            <button class="w-10 h-10 rounded-lg"
+            <button class="w-10 h-10 rounded-[var(--radius-large)]"
                     class:btn-regular={isRepeating > 0}
                     class:btn-plain={isRepeating === 0}
                     on:click={toggleRepeat}>
@@ -553,7 +553,7 @@ onDestroy(() => {
             </button>
         </div>
         <div class="bottom-controls flex items-center gap-2">
-            <button class="btn-plain w-8 h-8 rounded-lg" on:click={toggleMute}>
+            <button class="btn-plain w-8 h-8 rounded-[var(--radius-large)]" on:click={toggleMute}>
                 {#if isMuted || volume === 0}
                     <Icon icon="material-symbols:volume-off" class="text-lg" />
                 {:else if volume < 0.5}
@@ -580,7 +580,7 @@ onDestroy(() => {
                 <div class="h-full bg-[var(--primary)] rounded-full transition-all duration-100"
                      style="width: {volume * 100}%"></div>
             </div>
-            <button class="btn-plain w-8 h-8 rounded-lg"
+            <button class="btn-plain w-8 h-8 rounded-[var(--radius-large)]"
                     class:text-[var(--primary)]={showPlaylist}
                     on:click={togglePlaylist}>
                 <Icon icon="material-symbols:queue-music" class="text-lg" />
@@ -592,7 +592,7 @@ onDestroy(() => {
              transition:slide={{ duration: 300, axis: 'y' }}>
             <div class="playlist-header flex items-center justify-between p-4 border-b border-[var(--line-divider)]">
                 <h3 class="text-lg font-semibold text-90">{i18n(Key.playlist)}</h3>
-                <button class="btn-plain w-8 h-8 rounded-lg" on:click={togglePlaylist}>
+                <button class="btn-plain w-8 h-8 rounded-[var(--radius-large)]" on:click={togglePlaylist}>
                     <Icon icon="material-symbols:close" class="text-lg" />
                 </button>
             </div>
@@ -621,7 +621,7 @@ onDestroy(() => {
                             {/if}
                         </div>
                         <!-- 歌单列表内封面仍为圆角矩形 -->
-                        <div class="w-10 h-10 rounded-lg overflow-hidden bg-[var(--btn-regular-bg)] flex-shrink-0">
+                        <div class="w-10 h-10 rounded-[var(--radius-large)] overflow-hidden bg-[var(--btn-regular-bg)] flex-shrink-0">
                             <img src={getAssetPath(song.cover)} alt={song.title} class="w-full h-full object-cover" />
                         </div>
                         <div class="flex-1 min-w-0">

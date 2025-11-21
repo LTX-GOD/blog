@@ -182,7 +182,7 @@ const itemColor = item.color || "var(--color-default-blue)";
     )}
     
     <!-- 内容卡片 -->
-    <div class="flex-1 bg-white dark:bg-gray-800 rounded-lg border border-black/10 dark:border-white/10 hover:shadow-lg transition-shadow duration-300">
+    <div class="flex-1 bg-white dark:bg-gray-800 rounded-[var(--radius-large)] border border-black/10 dark:border-white/10 hover:shadow-lg transition-shadow duration-300">
       <div class={sizeClasses.container}>
         <!-- 标题和类型 -->
         <div class="flex items-start justify-between mb-3">
@@ -275,11 +275,11 @@ const itemColor = item.color || "var(--color-default-blue)";
   </div>
 ) : (
   <!-- 卡片布局 -->
-  <div class="bg-white dark:bg-gray-800 rounded-lg border border-black/10 dark:border-white/10 hover:shadow-lg transition-shadow duration-300">
+  <div class="bg-white dark:bg-gray-800 rounded-[var(--radius-large)] border border-black/10 dark:border-white/10 hover:shadow-lg transition-shadow duration-300">
     <div class={sizeClasses.container}>
       <!-- 图标和标题 -->
       <div class="flex items-start gap-4 mb-3">
-        <div class={`rounded-lg flex items-center justify-center shrink-0 ${sizeClasses.node}`} style={`background-color: ${itemColor}20`}>
+        <div class={`rounded-[var(--radius-large)] flex items-center justify-center shrink-0 ${sizeClasses.node}`} style={`background-color: ${itemColor}20`}>
           <iconify-icon icon={item.icon || getTypeIcon(item.type)} class={sizeClasses.nodeIcon} style={`color: ${itemColor}`}></iconify-icon>
         </div>
         <div class="flex-1">

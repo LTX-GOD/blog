@@ -116,12 +116,12 @@ const sizeClasses = getSizeClasses(size);
 const skillColor = skill.color || "var(--color-default-blue)";
 ---
 
-<div class="bg-white dark:bg-slate-800/50 rounded-lg border border-black/10 dark:border-white/10 overflow-hidden hover:shadow-lg transition-all duration-300 group">
+<div class="bg-white dark:bg-slate-800/50 rounded-[var(--radius-large)] border border-black/10 dark:border-white/10 overflow-hidden hover:shadow-lg transition-all duration-300 group">
   <div class={sizeClasses.container}>
     <div class="flex items-start gap-4">
       <!-- 技能图标 -->
       {showIcon && skill.icon && (
-        <div class={`rounded-lg flex items-center justify-center shrink-0 ${sizeClasses.icon}`} style={`background-color: ${skillColor}20`}>
+        <div class={`rounded-[var(--radius-large)] flex items-center justify-center shrink-0 ${sizeClasses.icon}`} style={`background-color: ${skillColor}20`}>
           <Icon 
             icon={skill.icon} 
             class={sizeClasses.iconText} 

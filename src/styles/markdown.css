@@ -3,7 +3,12 @@
         @apply text-3xl;
     }
 
-    h1, h2, h3, h4, h5, h6 {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
         .anchor {
             @apply transition -m-0.5 ml-[0.2ch] p-0.5 select-none opacity-0 no-underline !important;
 
@@ -20,12 +25,12 @@
     }
 
     a:not(.no-styling) {
-        @apply relative bg-none font-medium text-[var(--primary)]
-        underline decoration-[var(--link-underline)] decoration-1 decoration-dashed underline-offset-4;
+        @apply relative bg-none font-medium text-[var(--primary)] underline decoration-[var(--link-underline)] decoration-1 decoration-dashed underline-offset-4;
         box-decoration-break: clone;
         -webkit-box-decoration-break: clone;
-    
-        &:hover, &:active {
+
+        &:hover,
+        &:active {
             @apply decoration-transparent;
             background: var(--btn-plain-bg-hover);
             border-bottom: 1px dashed var(--link-hover);
@@ -37,14 +42,17 @@
         @apply bg-[var(--inline-code-bg)] text-[var(--inline-code-color)] px-1 py-0.5 rounded-md overflow-hidden;
 
         font-family: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
+
         &:before {
-            content:none;
+            content: none;
         }
+
         &:after {
-            content:none;
+            content: none;
         }
 
         counter-reset: line;
+
         span.line {
             &:before {
                 @apply text-white/25 mr-4 w-4 inline-block;
@@ -52,7 +60,9 @@
                 counter-increment: line;
                 direction: rtl;
             }
-            &:last-child:empty, &:last-child:has(> span:empty:only-child) {
+
+            &:last-child:empty,
+            &:last-child:has(> span:empty:only-child) {
                 display: none;
             }
         }
@@ -63,22 +73,23 @@
         @apply opacity-0 shadow-lg shadow-black/50 absolute active:scale-90 h-8 w-8 top-3 right-3 text-sm rounded-lg transition-all ease-in-out z-20 cursor-pointer;
         background: var(--btn-regular-bg);
     }
-    
+
     .copy-btn:hover {
         background: var(--btn-regular-bg-hover);
     }
-    
+
     /* 浅色模式适配 */
     @media (prefers-color-scheme: light) {
         .copy-btn {
             @apply shadow-black/20;
         }
     }
-    
+
     /* 支持 Astro 的主题切换（非 dark 类时） */
     :root:not(.dark) .copy-btn {
         @apply shadow-black/20;
     }
+
     .frame:hover .copy-btn {
         opacity: 1;
     }
@@ -87,17 +98,21 @@
         @apply absolute top-1/2 left-1/2 transition -translate-x-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none;
         fill: var(--btn-content);
     }
+
     .copy-btn .copy-icon {
         @apply opacity-100;
         fill: var(--btn-content);
     }
+
     .copy-btn.success .copy-icon {
         @apply opacity-0 fill-[var(--deep-text)]
     }
+
     .copy-btn .success-icon {
         @apply opacity-0;
         fill: var(--btn-content);
     }
+
     .copy-btn.success .success-icon {
         @apply opacity-100
     }
@@ -105,13 +120,15 @@
 
     .expressive-code {
         @apply my-4;
+
         ::selection {
             @apply bg-[var(--codeblock-selection)];
         }
     }
 
 
-    ul, ol {
+    ul,
+    ol {
         li::marker {
             @apply text-[var(--primary)];
         }
@@ -126,7 +143,8 @@
         }
 
         /* Remove the double quotes from default styles */
-        p:before, p:after {
+        p:before,
+        p:after {
             @apply content-none;
         }
 
@@ -137,7 +155,7 @@
         overflow-x: auto;
         margin: 1em 0;
     }
-    
+
 }
 
 /* 修复代码块内列表项标记颜色问题 */
@@ -145,4 +163,3 @@
 .custom-md .expressive-code ol li::marker {
     @apply text-inherit;
 }
-

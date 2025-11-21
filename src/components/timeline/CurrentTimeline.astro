@@ -35,9 +35,9 @@ const { items, getTypeIcon, formatDate, getDuration } = Astro.props;
     </h2>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       {items.map((item) => (
-        <div class="bg-white dark:bg-gray-800 rounded-lg border border-black/10 dark:border-white/10 p-6 hover:shadow-lg transition-shadow duration-300">
+        <div class="bg-white dark:bg-gray-800 rounded-[var(--radius-large)] border border-black/10 dark:border-white/10 p-6 hover:shadow-lg transition-shadow duration-300">
           <div class="flex items-start gap-4">
-            <div class="w-12 h-12 rounded-lg flex items-center justify-center" style={`background-color: ${item.color || 'rgb(99 102 241)'}20`}>
+            <div class="w-12 h-12 rounded-[var(--radius-large)] flex items-center justify-center" style={`background-color: ${item.color || 'rgb(99 102 241)'}20`}>
               <Icon 
                 icon={item.icon || getTypeIcon(item.type)} 
                 class="text-2xl" 

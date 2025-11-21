@@ -31,7 +31,7 @@ export const siteConfig: SiteConfig = {
 		fixed: false, // 对访问者隐藏主题色选择器
 	},
 
-	
+
 	bangumi: {
 		userId: "your-bangumi-id", // 在此处设置你的Bangumi用户ID，可以设置为 "sai" 测试
 	},
@@ -47,7 +47,7 @@ export const siteConfig: SiteConfig = {
 		src: {
 			desktop: [
 				"/assets/images/beijing.jpg",
-				
+
 			], // 桌面横幅图片
 			mobile: [
 				"/assets/images/beijing.jpg",
@@ -127,10 +127,10 @@ export const fullscreenWallpaperConfig: FullscreenWallpaperConfig = {
 	enable: false, // 启用全屏壁纸功能,非Banner模式下生效
 	src: {
 		desktop: [
-			
+
 		], // 桌面横幅图片
 		mobile: [
-			
+
 		], // 移动横幅图片
 	}, // 使用本地横幅图片
 	position: "center", // 壁纸位置，等同于 object-position
@@ -166,14 +166,14 @@ export const navBarConfig: NavBarConfig = {
 					icon: "fa6-brands:bilibili",
 				},
 			],
-		},	
+		},
 		{
 			name: "About",
 			url: "/content/",
 			icon: "material-symbols:info",
 			children: [LinkPreset.About, LinkPreset.Friends],
 		},
-		
+
 	],
 };
 

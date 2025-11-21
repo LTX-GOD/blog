@@ -7,12 +7,13 @@ import { onMount } from "svelte";
 import type { SearchResult } from "@/global";
 import { navigateToPage } from "@utils/navigation-utils";
 
-let keywordDesktop = "";
-let keywordMobile = "";
+let keyword = "";
 let result: SearchResult[] = [];
 let isSearching = false;
 let pagefindLoaded = false;
 let initialized = false;
+let searchInput: HTMLInputElement;
+let isOpen = false;
 
 const fakeResult: SearchResult[] = [
 	{
@@ -32,42 +33,43 @@ const fakeResult: SearchResult[] = [
 	},
 ];
 
-const togglePanel = () => {
-	const panel = document.getElementById("search-panel");
-	panel?.classList.toggle("float-panel-closed");
+const openSearch = () => {
+	isOpen = true;
+	setTimeout(() => {
+		searchInput?.focus();
+	}, 100);
+	document.body.style.overflow = "hidden";
 };
 
-const setPanelVisibility = (show: boolean, isDesktop: boolean): void => {
-	const panel = document.getElementById("search-panel");
-	if (!panel || !isDesktop) return;
-
-	if (show) {
-		panel.classList.remove("float-panel-closed");
-	} else {
-		panel.classList.add("float-panel-closed");
-	}
-};
-
-const closeSearchPanel = (): void => {
-	const panel = document.getElementById("search-panel");
-	if (panel) {
-		panel.classList.add("float-panel-closed");
-	}
-	// 清空搜索关键词和结果
-	keywordDesktop = "";
-	keywordMobile = "";
+const closeSearch = () => {
+	isOpen = false;
+	keyword = "";
 	result = [];
+	document.body.style.overflow = "";
+};
+
+const handleKeydown = (e: KeyboardEvent) => {
+	if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+		e.preventDefault();
+		if (isOpen) {
+			closeSearch();
+		} else {
+			openSearch();
+		}
+	}
+	if (e.key === "Escape" && isOpen) {
+		closeSearch();
+	}
 };
 
 const handleResultClick = (event: Event, url: string): void => {
 	event.preventDefault();
-	closeSearchPanel();
+	closeSearch();
 	navigateToPage(url);
 };
 
-const search = async (keyword: string, isDesktop: boolean): Promise<void> => {
-	if (!keyword) {
-		setPanelVisibility(false, isDesktop);
+const search = async (kw: string): Promise<void> => {
+	if (!kw) {
 		result = [];
 		return;
 	}
@@ -82,7 +84,7 @@ const search = async (keyword: string, isDesktop: boolean): Promise<void> => {
 		let searchResults: SearchResult[] = [];
 
 		if (import.meta.env.PROD && pagefindLoaded && window.pagefind) {
-			const response = await window.pagefind.search(keyword);
+			const response = await window.pagefind.search(kw);
 			searchResults = await Promise.all(
 				response.results.map((item) => item.data()),
 			);
@@ -94,11 +96,9 @@ const search = async (keyword: string, isDesktop: boolean): Promise<void> => {
 		}
 
 		result = searchResults;
-		setPanelVisibility(result.length > 0, isDesktop);
 	} catch (error) {
 		console.error("Search error:", error);
 		result = [];
-		setPanelVisibility(false, isDesktop);
 	} finally {
 		isSearching = false;
 	}
@@ -112,8 +112,6 @@ onMount(() => {
 			!!window.pagefind &&
 			typeof window.pagefind.search === "function";
 		console.log("Pagefind status on init:", pagefindLoaded);
-		if (keywordDesktop) search(keywordDesktop, true);
-		if (keywordMobile) search(keywordMobile, false);
 	};
 
 	if (import.meta.env.DEV) {
@@ -130,88 +128,131 @@ onMount(() => {
 			console.warn(
 				"Pagefind load error event received. Search functionality will be limited.",
 			);
-			initializeSearch(); // Initialize with pagefindLoaded as false
+			initializeSearch();
 		});
 
-		// Fallback in case events are not caught or pagefind is already loaded by the time this script runs
 		setTimeout(() => {
 			if (!initialized) {
 				console.log("Fallback: Initializing search after timeout.");
 				initializeSearch();
 			}
-		}, 2000); // Adjust timeout as needed
+		}, 2000);
 	}
+
+	window.addEventListener("keydown", handleKeydown);
+	return () => {
+		window.removeEventListener("keydown", handleKeydown);
+	};
 });
 
-$: if (initialized && keywordDesktop) {
+$: if (initialized && keyword) {
 	(async () => {
-		await search(keywordDesktop, true);
-	})();
-}
-
-$: if (initialized && keywordMobile) {
-	(async () => {
-		await search(keywordMobile, false);
+		await search(keyword);
 	})();
 }
 </script>
 
-<!-- search bar for desktop view -->
-<div id="search-bar" class="hidden lg:flex transition-all items-center h-11 mr-2 rounded-lg
-      bg-black/[0.04] hover:bg-black/[0.06] focus-within:bg-black/[0.06]
-      dark:bg-white/5 dark:hover:bg-white/10 dark:focus-within:bg-white/10
+<!-- Search Trigger Button (Desktop) -->
+<button on:click={openSearch} class="hidden lg:flex items-center h-11 mr-2 rounded-[var(--radius-large)]
+      bg-black/[0.04] hover:bg-black/[0.06]
+      dark:bg-white/5 dark:hover:bg-white/10
+      px-3 gap-2 transition-colors
 ">
-    <Icon icon="material-symbols:search" class="absolute text-[1.25rem] pointer-events-none ml-3 transition my-auto text-black/30 dark:text-white/30"></Icon>
-    <input placeholder="{i18n(I18nKey.search)}" bind:value={keywordDesktop} on:focus={() => search(keywordDesktop, true)}
-           class="transition-all pl-10 text-sm bg-transparent outline-0
-         h-full w-40 active:w-60 focus:w-60 text-black/50 dark:text-white/50"
-    >
-</div>
+    <Icon icon="material-symbols:search" class="text-[1.25rem] text-black/30 dark:text-white/30"></Icon>
+    <span class="text-sm text-black/30 dark:text-white/30">Search</span>
+    <span class="text-xs border border-black/10 dark:border-white/10 rounded px-1.5 py-0.5 text-black/30 dark:text-white/30">⌘K</span>
+</button>
 
-<!-- toggle btn for phone/tablet view -->
-<button on:click={togglePanel} aria-label="Search Panel" id="search-switch"
-        class="btn-plain scale-animation lg:!hidden rounded-lg w-11 h-11 active:scale-90">
+<!-- Search Trigger Button (Mobile) -->
+<button on:click={openSearch} aria-label="Search Panel"
+        class="btn-plain scale-animation lg:!hidden rounded-[var(--radius-large)] w-11 h-11 active:scale-90">
     <Icon icon="material-symbols:search" class="text-[1.25rem]"></Icon>
 </button>
 
-<!-- search panel -->
-<div id="search-panel" class="float-panel float-panel-closed search-panel absolute md:w-[30rem]
-top-20 left-4 md:left-[unset] right-4 shadow-2xl rounded-2xl p-2">
+<!-- Telescope Modal -->
+{#if isOpen}
+<div class="fixed inset-0 z-[100] flex items-start justify-center pt-[15vh] px-4">
+    <!-- Backdrop -->
+    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" on:click={closeSearch}></div>
 
-    <!-- search bar inside panel for phone/tablet -->
-    <div id="search-bar-inside" class="flex relative lg:hidden transition-all items-center h-11 rounded-xl
-      bg-black/[0.04] hover:bg-black/[0.06] focus-within:bg-black/[0.06]
-      dark:bg-white/5 dark:hover:bg-white/10 dark:focus-within:bg-white/10
-  ">
-        <Icon icon="material-symbols:search" class="absolute text-[1.25rem] pointer-events-none ml-3 transition my-auto text-black/30 dark:text-white/30"></Icon>
-        <input placeholder="Search" bind:value={keywordMobile}
-               class="pl-10 absolute inset-0 text-sm bg-transparent outline-0
-               focus:w-60 text-black/50 dark:text-white/50"
-        >
+    <!-- Modal Window -->
+    <div class="relative w-full max-w-2xl bg-[var(--float-panel-bg)] rounded-[var(--radius-large)] shadow-2xl overflow-hidden border border-[var(--primary)]/30 flex flex-col max-h-[70vh]">
+        
+        <!-- Prompt Bar -->
+        <div class="flex items-center px-4 py-3 border-b border-[var(--primary)]/20 bg-[var(--card-bg)]">
+            <Icon icon="material-symbols:search" class="text-[var(--primary)] text-xl mr-3" />
+            <span class="text-[var(--primary)] mr-2 font-bold">Telescope</span>
+            <span class="text-[var(--content-meta)] mr-2">></span>
+            <input 
+                bind:this={searchInput}
+                bind:value={keyword}
+                placeholder="Find files..." 
+                class="flex-1 bg-transparent border-none outline-none text-[var(--deep-text)] placeholder-[var(--content-meta)] font-mono text-base h-full"
+                autocomplete="off"
+            />
+            <button on:click={closeSearch} class="text-[var(--content-meta)] hover:text-[var(--deep-text)] transition-colors">
+                <span class="text-xs">ESC</span>
+            </button>
+        </div>
+
+        <!-- Results List -->
+        <div class="overflow-y-auto flex-1 p-2 scrollbar-hide">
+            {#if result.length > 0}
+                {#each result as item}
+                    <a href={item.url}
+                       on:click={(e) => handleResultClick(e, item.url)}
+                       class="group flex flex-col px-3 py-2 rounded-[4px] hover:bg-[var(--btn-plain-bg-hover)] transition-colors mb-1">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[var(--primary)] font-mono text-sm group-hover:text-[var(--link-hover)] transition-colors">
+                                {item.meta.title}
+                            </span>
+                            <Icon icon="material-symbols:subdirectory-arrow-left" class="text-[var(--content-meta)] opacity-0 group-hover:opacity-100 transition-opacity text-xs" />
+                        </div>
+                        <div class="text-[var(--content-meta)] text-xs mt-1 font-mono truncate pl-4 border-l-2 border-[var(--content-meta)]/30 group-hover:border-[var(--primary)]/50 transition-colors">
+                            {@html item.excerpt}
+                        </div>
+                    </a>
+                {/each}
+            {:else if keyword}
+                <div class="flex flex-col items-center justify-center py-12 text-[var(--content-meta)]">
+                    <Icon icon="material-symbols:search-off" class="text-4xl mb-2 opacity-50" />
+                    <span class="font-mono text-sm">No results found for "{keyword}"</span>
+                </div>
+            {:else}
+                <div class="flex flex-col items-center justify-center py-12 text-[var(--content-meta)]">
+                    <div class="flex gap-4 mb-4">
+                        <div class="flex flex-col items-center gap-1">
+                            <span class="px-2 py-1 rounded bg-[var(--btn-regular-bg)] text-xs font-mono border border-[var(--line-divider)]">Type</span>
+                            <span class="text-[10px]">to search</span>
+                        </div>
+                        <div class="flex flex-col items-center gap-1">
+                            <span class="px-2 py-1 rounded bg-[var(--btn-regular-bg)] text-xs font-mono border border-[var(--line-divider)]">↑↓</span>
+                            <span class="text-[10px]">to navigate</span>
+                        </div>
+                        <div class="flex flex-col items-center gap-1">
+                            <span class="px-2 py-1 rounded bg-[var(--btn-regular-bg)] text-xs font-mono border border-[var(--line-divider)]">ESC</span>
+                            <span class="text-[10px]">to close</span>
+                        </div>
+                    </div>
+                </div>
+            {/if}
+        </div>
+        
+        <!-- Status Line -->
+        <div class="px-4 py-1 bg-[var(--card-bg)] border-t border-[var(--primary)]/20 flex justify-between items-center text-[10px] text-[var(--content-meta)] font-mono">
+            <span>{result.length} results</span>
+            <span>{keyword ? 'searching...' : 'ready'}</span>
+        </div>
     </div>
-
-    <!-- search results -->
-    {#each result as item}
-        <a href={item.url}
-           on:click={(e) => handleResultClick(e, item.url)}
-           class="transition first-of-type:mt-2 lg:first-of-type:mt-0 group block
-       rounded-xl text-lg px-3 py-2 hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)]">
-            <div class="transition text-90 inline-flex font-bold group-hover:text-[var(--primary)]">
-                {item.meta.title}<Icon icon="fa6-solid:chevron-right" class="transition text-[0.75rem] translate-x-1 my-auto text-[var(--primary)]"></Icon>
-            </div>
-            <div class="transition text-sm text-50">
-                {@html item.excerpt}
-            </div>
-        </a>
-    {/each}
 </div>
+{/if}
 
 <style>
-  input:focus {
-    outline: 0;
-  }
-  .search-panel {
-    max-height: calc(100vh - 100px);
-    overflow-y: auto;
-  }
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
 </style>

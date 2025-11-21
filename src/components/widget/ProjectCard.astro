@@ -91,7 +91,7 @@ const getSizeClasses = (size: string) => {
 const sizeClasses = getSizeClasses(size);
 ---
 
-<div class="bg-white dark:bg-gray-800 rounded-lg border border-black/10 dark:border-white/10 overflow-hidden hover:shadow-lg transition-all duration-300 group">
+<div class="bg-white dark:bg-gray-800 rounded-[var(--radius-large)] border border-black/10 dark:border-white/10 overflow-hidden hover:shadow-lg transition-all duration-300 group">
   <!-- 项目图片 -->
   {showImage && project.image && (
     <div class={`overflow-hidden ${size === 'large' ? 'aspect-video' : 'aspect-[4/3]'}`}>

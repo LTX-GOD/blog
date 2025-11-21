@@ -83,7 +83,7 @@ const getIconStyle = () => {
 ---
 
 <div 
-  class="rounded-lg border border-black/10 dark:border-white/10 hover:shadow-lg transition-all duration-300 group cursor-pointer"
+  class="rounded-[var(--radius-large)] border border-black/10 dark:border-white/10 hover:shadow-lg transition-all duration-300 group cursor-pointer"
   style={getBackgroundStyle()}
 >
   <div class={sizeClasses.container}>
@@ -92,7 +92,7 @@ const getIconStyle = () => {
       <!-- 图标 -->
       {icon && (
         <div 
-          class={`rounded-lg flex items-center justify-center ${sizeClasses.iconContainer}`}
+          class={`rounded-[var(--radius-large)] flex items-center justify-center ${sizeClasses.iconContainer}`}
           style={getIconStyle()}
         >
           <iconify-icon icon={icon} class={sizeClasses.icon}></iconify-icon>
@@ -151,7 +151,7 @@ const getIconStyle = () => {
   </div>
   
   <!-- 悬停效果 -->
-  <div class="absolute inset-0 bg-white/5 dark:bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg pointer-events-none"></div>
+  <div class="absolute inset-0 bg-white/5 dark:bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[var(--radius-large)] pointer-events-none"></div>
 </div>
 
 <script>

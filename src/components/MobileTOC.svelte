@@ -223,7 +223,7 @@ if (typeof window !== "undefined") {
 	on:click={togglePanel} 
 	aria-label="Table of Contents" 
 	id="mobile-toc-switch"
-	class="btn-plain scale-animation rounded-lg h-11 w-11 active:scale-90 lg:!hidden"
+	class="btn-plain scale-animation rounded-[var(--radius-large)] h-11 w-11 active:scale-90 lg:!hidden"
 >
 	<Icon icon="material-symbols:format-list-bulleted" class="text-[1.25rem]" />
 </button>
@@ -232,14 +232,14 @@ if (typeof window !== "undefined") {
 <div 
 	id="mobile-toc-panel" 
 	class="float-panel float-panel-closed mobile-toc-panel absolute md:w-[20rem] w-[calc(100vw-2rem)]
-		top-20 left-4 md:left-[unset] right-4 shadow-2xl rounded-2xl p-4"
+		top-20 left-4 md:left-[unset] right-4 shadow-2xl rounded-[var(--radius-large)] p-4"
 >
 	<div class="flex items-center justify-between mb-4">
 		<h3 class="text-lg font-bold text-[var(--primary)]">{isHomePage ? i18n(I18nKey.postList) : i18n(I18nKey.tableOfContents)}</h3>
 		<button 
 			on:click={togglePanel}
 			aria-label="Close TOC"
-			class="btn-plain rounded-lg h-8 w-8 active:scale-90"
+			class="btn-plain rounded-[var(--radius-large)] h-8 w-8 active:scale-90"
 		>
 			<Icon icon="material-symbols:close" class="text-[1rem]" />
 		</button>

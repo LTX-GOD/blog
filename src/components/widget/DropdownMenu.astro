@@ -28,15 +28,14 @@ const hasChildren = processedLink.children && processedLink.children.length > 0;
 <div class:list={["dropdown-container", className]} data-dropdown>
 	{hasChildren ? (
 		<button 
-			class="btn-plain scale-animation rounded-[var(--radius-large)] h-11 font-bold px-5 active:scale-95 dropdown-trigger"
+			class="btn-plain scale-animation rounded-[var(--radius-large)] h-11 font-bold px-5 active:scale-95 dropdown-trigger group"
 			aria-expanded="false"
 			aria-haspopup="true"
 			data-dropdown-trigger
 		>
-			<div class="flex items-center">
-				{processedLink.icon && <Icon name={processedLink.icon} class="text-[1.1rem] mr-2" />}
-				{processedLink.name}
-				<Icon name="material-symbols:keyboard-arrow-down-rounded" class="text-[1.25rem] transition-transform duration-200 dropdown-arrow ml-1" />
+			<div class="flex items-center font-mono">
+				<span class="group-hover:text-[var(--primary)] transition-colors">[ {processedLink.name} ]</span>
+				<Icon name="material-symbols:keyboard-arrow-down-rounded" class="text-[1.25rem] transition-transform duration-200 dropdown-arrow ml-1 opacity-50 group-hover:opacity-100" />
 			</div>
 		</button>
 		<div class="dropdown-menu" data-dropdown-menu>
@@ -45,11 +44,11 @@ const hasChildren = processedLink.children && processedLink.children.length > 0;
 					<a 
 						href={child.external ? child.url : url(child.url)} 
 						target={child.external ? "_blank" : null}
-						class="dropdown-item"
+						class="dropdown-item group"
 						aria-label={child.name}
 					>
-						<div class="flex items-center">
-							{child.icon && <Icon name={child.icon} class="text-[1rem] mr-2" />}
+						<div class="flex items-center font-mono">
+							<span class="text-[var(--primary)] opacity-0 group-hover:opacity-100 mr-2 transition-opacity">></span>
 							<span>{child.name}</span>
 						</div>
 						{child.external && (
@@ -64,11 +63,10 @@ const hasChildren = processedLink.children && processedLink.children.length > 0;
 			aria-label={processedLink.name} 
 			href={processedLink.external ? processedLink.url : url(processedLink.url)} 
 			target={processedLink.external ? "_blank" : null}
-			class="btn-plain scale-animation rounded-[var(--radius-large)] h-11 font-bold px-5 active:scale-95"
+			class="btn-plain scale-animation rounded-[var(--radius-large)] h-11 font-bold px-5 active:scale-95 group"
 		>
-			<div class="flex items-center">
-				{processedLink.icon && <Icon name={processedLink.icon} class="text-[1.1rem] mr-2" />}
-				{processedLink.name}
+			<div class="flex items-center font-mono">
+				<span class="group-hover:text-[var(--primary)] transition-colors">[ {processedLink.name} ]</span>
 				{processedLink.external && <Icon name="fa6-solid:arrow-up-right-from-square" class="text-[0.875rem] transition -translate-y-[1px] ml-1 text-black/[0.2] dark:text-white/[0.2]" />}
 			</div>
 		</a>

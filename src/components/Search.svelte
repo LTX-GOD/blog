@@ -153,19 +153,19 @@ $: if (initialized && keyword) {
 </script>
 
 <!-- Search Trigger Button (Desktop) -->
-<button on:click={openSearch} class="hidden lg:flex items-center h-11 mr-2 rounded-[var(--radius-large)]
+<button on:click={openSearch} class="hidden lg:flex items-center h-10 mr-2 rounded-[var(--radius-large)]
       bg-black/[0.04] hover:bg-black/[0.06]
       dark:bg-white/5 dark:hover:bg-white/10
-      px-3 gap-2 transition-colors
+      px-3 gap-2 transition-colors group
 ">
-    <Icon icon="material-symbols:search" class="text-[1.25rem] text-black/30 dark:text-white/30"></Icon>
-    <span class="text-sm text-black/30 dark:text-white/30">Search</span>
-    <span class="text-xs border border-black/10 dark:border-white/10 rounded px-1.5 py-0.5 text-black/30 dark:text-white/30">⌘K</span>
+    <span class="text-sm font-mono text-[var(--primary)] group-hover:text-[var(--link-hover)] transition-colors">>_</span>
+    <span class="text-sm font-mono text-black/50 dark:text-white/50 group-hover:text-[var(--primary)] transition-colors">Search...</span>
+    <span class="text-[10px] font-mono border border-black/10 dark:border-white/10 rounded px-1.5 py-0.5 text-black/30 dark:text-white/30 ml-2">⌘K</span>
 </button>
 
 <!-- Search Trigger Button (Mobile) -->
 <button on:click={openSearch} aria-label="Search Panel"
-        class="btn-plain scale-animation lg:!hidden rounded-[var(--radius-large)] w-11 h-11 active:scale-90">
+        class="btn-plain scale-animation lg:!hidden rounded-[var(--radius-large)] w-10 h-10 active:scale-90">
     <Icon icon="material-symbols:search" class="text-[1.25rem]"></Icon>
 </button>
 

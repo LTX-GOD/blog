@@ -298,6 +298,29 @@ html {
         display: none;
     }
 
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: var(--scrollbar-bg);
+        border-radius: 0;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--scrollbar-bg-hover);
+    }
+
+    ::-webkit-scrollbar-corner {
+        background: transparent;
+    }
+
     .text-90 {
         @apply text-black/90 dark:text-white/90
     }

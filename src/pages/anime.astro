@@ -5,7 +5,6 @@ import localAnimeList from "../data/anime";
 import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
 import MainGridLayout from "../layouts/MainGridLayout.astro";
-import { siteConfig } from "../config";
 
 // Bangumi API配置
 const BANGUMI_USER_ID = siteConfig.bangumi?.userId || "your-user-id"; // 用户ID
@@ -128,8 +127,10 @@ async function processBangumiData(data: any, status: string) {
 	return detailedItems;
 }
 
+import type { AnimeItem } from "../data/anime";
+
 // 根据模式获取番剧列表
-let animeList = [];
+let animeList: AnimeItem[] = [];
 if (ANIME_MODE === "local") {
 	// 使用本地配置
 	animeList = localAnimeList;

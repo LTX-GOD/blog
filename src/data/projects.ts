@@ -9,8 +9,8 @@ export interface Project {
 	category: "web" | "mobile" | "desktop" | "other";
 	techStack: string[];
 	status: "completed" | "in-progress" | "planned";
-	liveDemo?: string;
-	sourceCode?: string;
+	demoUrl?: string;
+	sourceUrl?: string;
 	startDate: string;
 	endDate?: string;
 	featured?: boolean;
@@ -27,8 +27,8 @@ export const projectsData: Project[] = [
 		category: "web",
 		techStack: ["Astro", "TypeScript", "Tailwind CSS", "Svelte"],
 		status: "completed",
-		liveDemo: "https://blog.example.com",
-		sourceCode: "https://github.com/example/mizuki",
+		demoUrl: "https://blog.example.com",
+		sourceUrl: "https://github.com/example/mizuki",
 		startDate: "2024-01-01",
 		endDate: "2024-06-01",
 		featured: true,
@@ -43,8 +43,8 @@ export const projectsData: Project[] = [
 		category: "web",
 		techStack: ["React", "Next.js", "TypeScript", "Framer Motion"],
 		status: "completed",
-		liveDemo: "https://portfolio.example.com",
-		sourceCode: "https://github.com/example/portfolio",
+		demoUrl: "https://portfolio.example.com",
+		sourceUrl: "https://github.com/example/portfolio",
 		startDate: "2023-09-01",
 		endDate: "2023-12-01",
 		featured: true,
@@ -71,7 +71,7 @@ export const projectsData: Project[] = [
 		category: "web",
 		techStack: ["Vue.js", "D3.js", "TypeScript", "Node.js"],
 		status: "completed",
-		liveDemo: "https://dataviz.example.com",
+		demoUrl: "https://dataviz.example.com",
 		startDate: "2023-06-01",
 		endDate: "2023-11-01",
 		tags: ["Data Visualization", "Analytics", "Charts"],

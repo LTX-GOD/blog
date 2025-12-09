@@ -79,6 +79,9 @@ enum I18nKey {
 	// 音乐播放器
 	playlist = "playlist",
 
+	// 图库
+	gallery = "gallery",
+
 	// 相册页面
 	albums = "albums",
 	albumsSubtitle = "albumsSubtitle",

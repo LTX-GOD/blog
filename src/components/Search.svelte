@@ -187,6 +187,7 @@ $: if (initialized && keyword) {
                 bind:this={searchInput}
                 bind:value={keyword}
                 placeholder="Find files..." 
+                aria-label="Search"
                 class="flex-1 bg-transparent border-none outline-none text-[var(--deep-text)] placeholder-[var(--content-meta)] font-mono text-base h-full"
                 autocomplete="off"
             />

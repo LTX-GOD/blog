@@ -82,7 +82,8 @@ export const zh_TW: Translation = {
 	[Key.playlist]: "播放列表",
 
 	// 相冊頁面
-	[Key.albums]: "相冊",
+	[Key.albums]: "相簿",
+	[Key.gallery]: "圖庫",
 	[Key.albumsSubtitle]: "記錄生活中的美好瞬間",
 	[Key.albumsEmpty]: "暫無內容",
 	[Key.albumsEmptyDesc]: "還沒有創建任何相冊，快去添加一些美好的回憶吧！",

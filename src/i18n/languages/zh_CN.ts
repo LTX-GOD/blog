@@ -83,6 +83,8 @@ export const zh_CN: Translation = {
 
 	// 相册页面
 	[Key.albums]: "相册",
+
+	[Key.gallery]: "图库",
 	[Key.albumsSubtitle]: "记录生活中的美好瞬间",
 	[Key.albumsEmpty]: "暂无内容",
 	[Key.albumsEmptyDesc]: "还没有创建任何相册，快去添加一些美好的回忆吧！",

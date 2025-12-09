@@ -9,7 +9,7 @@ import Pio from "@components/widget/Pio.svelte"; // 使用 Svelte 版本的 Pio 
 import BootLoader from "@components/misc/BootLoader.svelte";
 import { profileConfig, siteConfig, musicPlayerConfig, pioConfig } from "@/config";
 import { widgetConfigs } from "../config";
-import { umamiConfig } from "../config.ts";
+import { umamiConfig } from "../config";
 import {
 	BANNER_HEIGHT,
 	BANNER_HEIGHT_EXTEND,
@@ -135,6 +135,10 @@ const umamiScripts = umamiConfig.scripts || ""; // 获取Umami scripts配置
 	  data-overlayscrollbars-initialize
 >
 	<head>
+
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width" />
+		
 		<!-- 第三方分析脚本 - 延迟加载优化 -->
 		<script is:inline>
 			// 使用 requestIdleCallback 延迟加载第三方脚本
@@ -156,7 +160,7 @@ const umamiScripts = umamiConfig.scripts || ""; // 获取Umami scripts配置
 
 		<title>{pageTitle}</title>
 
-		<meta charset="UTF-8" />
+
 		<meta name="description" content={description || pageTitle}>
 		{siteConfig.keywords && siteConfig.keywords.length > 0 && (
 			<meta name="keywords" content={siteConfig.keywords.join(', ')} />
@@ -181,7 +185,6 @@ const umamiScripts = umamiConfig.scripts || ""; // 获取Umami scripts配置
 		<meta name="twitter:title" content={pageTitle}>
 		<meta name="twitter:description" content={description || pageTitle}>
 
-		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
 		{favicons.map(favicon => (
 			<link rel="icon"
@@ -271,7 +274,7 @@ const umamiScripts = umamiConfig.scripts || ""; // 获取Umami scripts配置
 
 		<!-- Sakura Effect -->
 		{(widgetConfigs.sakura as SakuraConfig)?.enable && (
-			<script define:vars={{ sakuraConfig: widgetConfigs.sakura }}>
+			<script is:inline define:vars={{ sakuraConfig: widgetConfigs.sakura }}>
 				if (sakuraConfig && sakuraConfig.enable) {
 					import('/src/utils/sakura-manager.ts').then(({ initSakura }) => {
 						requestIdleCallback(() => {
@@ -948,7 +951,7 @@ import { Fancybox } from "@fancyapps/ui";
 import "@fancyapps/ui/dist/fancybox/fancybox.css";
 
 // 使用单例模式避免重复初始化
-let fancyboxInstances = [];
+let fancyboxInstances: any[] = [];
 
 function initFancybox() {
   // 不需要关闭所有实例，只需检查是否已经初始化
@@ -1009,7 +1012,7 @@ function initFancybox() {
         transition: "slide",
         preload: 2,
       },
-    })
+    } as any)
   );
   
   // 为相册中的链接添加 Fancybox 支持
@@ -1019,12 +1022,12 @@ function initFancybox() {
       source: (el) => {
         return el.getAttribute("data-src") || el.getAttribute("href");
       },
-    })
+    } as any)
   );
   
   // 为单独的 fancybox 图片添加支持
   fancyboxInstances.push(
-    Fancybox.bind("[data-fancybox]:not(.moment-images a)", commonConfig)
+    Fancybox.bind("[data-fancybox]:not(.moment-images a)", commonConfig as any)
   );
 }
 

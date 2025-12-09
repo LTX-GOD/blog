@@ -104,7 +104,11 @@ const recentPosts = posts.slice(0, 6);
         </div>
     </div>
 
-    <script>
+    <script is:inline define:vars={{ 
+        copyLinkText: i18n(I18nKey.rssCopyLink), 
+        copiedText: i18n(I18nKey.rssCopied), 
+        copyFailedText: i18n(I18nKey.rssCopyFailed) 
+    }}>
         document.addEventListener('DOMContentLoaded', function() {
             const copyBtn = document.getElementById('copy-rss-btn');
             if (copyBtn) {
@@ -113,8 +117,8 @@ const recentPosts = posts.slice(0, 6);
                     if (!url) return;
                     try {
                         await navigator.clipboard.writeText(url);
-                        const originalText = this.textContent || i18n.RSS.copyLink;
-                        this.textContent = i18n.RSS.copied;
+                        const originalText = this.textContent || copyLinkText;
+                        this.textContent = copiedText;
                         this.style.backgroundColor = 'var(--color-default-green)';
                         
                         setTimeout(() => {
@@ -123,8 +127,8 @@ const recentPosts = posts.slice(0, 6);
                         }, 2000);
                     } catch (err) {
                         console.error('复制失败:', err);
-                        const originalText = this.textContent || i18n.RSS.copyLink;
-                        this.textContent = i18n.RSS.copyFailed;
+                        const originalText = this.textContent || copyLinkText;
+                        this.textContent = copyFailedText;
                         setTimeout(() => {
                             this.textContent = originalText;
                         }, 2000);

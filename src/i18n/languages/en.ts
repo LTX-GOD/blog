@@ -86,6 +86,8 @@ export const en: Translation = {
 
 	// Albums Page
 	[Key.albums]: "Albums",
+
+	[Key.gallery]: "Gallery",
 	[Key.albumsSubtitle]: "Record beautiful moments in life",
 	[Key.albumsEmpty]: "No content",
 	[Key.albumsEmptyDesc]:
@@ -162,7 +164,7 @@ export const en: Translation = {
 		"It is recommended to use Feedly, Inoreader or other Atom readers to subscribe to this site.",
 	[Key.atomCopied]: "Atom link copied to clipboard!",
 	[Key.atomCopyFailed]: "Copy failed, please copy the link manually",
-	
+
 	// Skills Page
 	[Key.skills]: "Skills",
 	[Key.skillsSubtitle]: "My technical skills and expertise",
@@ -241,12 +243,7 @@ export const en: Translation = {
 	// Last Modified Time Card
 	[Key.lastModifiedPrefix]: "Time since last edit: ",
 	[Key.lastModifiedOutdated]: "Some information may be outdated",
-	[Key.year]: "Y ",
-	[Key.month]: "M ",
-	[Key.day]: "D ",
-	[Key.hour]: "H ",
-	[Key.minute]: "Min ",
-	[Key.second]: "Sec",
+
 	[Key.year]: "y",
 	[Key.month]: "m",
 	[Key.day]: "d",

@@ -86,6 +86,7 @@ export const ja: Translation = {
 
 	// アルバムページ
 	[Key.albums]: "アルバム",
+	[Key.gallery]: "ギャラリー",
 	[Key.albumsSubtitle]: "生活の美しい瞬間を記録する",
 	[Key.albumsEmpty]: "コンテンツなし",
 	[Key.albumsEmptyDesc]:

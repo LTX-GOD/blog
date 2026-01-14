@@ -1,37 +1,48 @@
-# About Me
+## 👋 About Me
 
-一个来自 TKKC 的 ctfer?
+A **CTF player** from **TKKC**
 
-主要方向是 crypto 和 web，对 pwn、re 也有一点点经验。
+* Primary focus: **Crypto / Web / Blockchain**
+* Secondary experience: some hands-on exposure to **Pwn / RE**
+* Common team names: **Bluebud / Ech1**
+* Joint teams: **wgpsec** and **chamd5**
 
-平时会以 Bluebud/Ech1 的战队名比赛，同时也是狼组的一员
+---
 
-# 联系方式
+## 📬 Contact
 
-添加我的 QQ：2924465428
+* **QQ**: 2924465428
 
-# 其他的
+---
 
-略懂一些开发知识，比如`vue` `react` `nodejs` `python` `golang`等等。
+## 🧰 Tech Stack & Development Experience
 
-# 线下足迹
+I also work on small projects and write code regularly. My main experience includes:
 
-2024 漳盾杯
+* Frontend: `Vue` / `React`
+* Backend: `Node.js` / `Golang`
+* Scripting: `Python`
+* Editors: `Neovim (nvim)` / `VS Code`
 
-2024 楚慧杯
+---
 
-2025 ciscn&ccb 三等奖
+## 🏆 On-site Competition Experience
 
-2025 软件系统安全大赛 三等奖
+* **2024 Zhangdun Cup**
+* **2024 Chuhui Cup – Finals**
+* **2025 CISCN & CCB** — Third Prize
+* **2025 Software System Security Competition** — Third Prize
+* **2025 Industrial Cryptography Application Championship** — Excellence Award
+* **2025 Macau Hackathon** — Runner-up
+* **2025 Shandong Pengyun Cup – Finals**
+* **2025 Zhangdun Cup** — Champion 🏅
+* **2025 National Industrial Information Security Competition – Finals**
 
-2025 工业密码应用锦标赛 优秀奖
+---
 
-2025 澳门黑客松 亚军
+## Projects
 
-2025 山东省鹏云杯线下
-
-2025 漳盾杯 冠军
-
-# 爱好？
-
-乒乓、金铲铲?平常也会搞一些乱七八糟的小玩意玩玩。
+* my [dotfiles](https://github.com/LTX-GOD/dotfiles)
+* A theme for [Astro](https://github.com/matsuzaka-yuki/Mizuki)
+  You also can look my [blog](https://github.com/LTX-GOD/blog)
+* A tool for CTF but it has not been open-sourced.

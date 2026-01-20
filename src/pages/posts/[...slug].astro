@@ -237,56 +237,77 @@ const jsonLd = {
 
             <div class="card-base p-6 mb-4">
                 <script is:inline>
-                    function runtime() {
-                        const lastModifiedElement = document.getElementById('last-modified');
-                        const startDate = new Date(lastModifiedElement.dataset.lastModified);
-                        const currentDate = new Date();
-                        const diff = currentDate - startDate;
+                    (function() {
+                        function runtime() {
+                            const lastModifiedElement = document.getElementById('last-modified');
+                            const modifiedTimeElement = document.getElementById('modifiedtime');
+                            if (!lastModifiedElement || !modifiedTimeElement) {
+                                if (window.lastModifiedInterval) {
+                                    clearInterval(window.lastModifiedInterval);
+                                    window.lastModifiedInterval = null;
+                                }
+                                return;
+                            }
 
-                        const seconds = Math.floor(diff / 1000);
-                        const days = Math.floor(seconds / 86400);
-                        const hours = Math.floor((seconds % 86400) / 3600);
-                        const minutes = Math.floor((seconds % 3600) / 60);
-                        const secs = seconds % 60;
+                            const startDate = new Date(lastModifiedElement.dataset.lastModified);
+                            const currentDate = new Date();
+                            const diff = currentDate - startDate;
 
-                        const years = Math.floor(days / 365);
-                        const months = Math.floor((days % 365) / 30);
-                        const remainingDays = days % 30;
+                            const seconds = Math.floor(diff / 1000);
+                            const days = Math.floor(seconds / 86400);
+                            const hours = Math.floor((seconds % 86400) / 3600);
+                            const minutes = Math.floor((seconds % 3600) / 60);
+                            const secs = seconds % 60;
 
-                        const prefix = lastModifiedElement.dataset.prefix;
-                        const yearKey = lastModifiedElement.dataset.year;
-                        const monthKey = lastModifiedElement.dataset.month;
-                        const dayKey = lastModifiedElement.dataset.day;
-                        const hourKey = lastModifiedElement.dataset.hour;
-                        const minuteKey = lastModifiedElement.dataset.minute;
-                        const secondKey = lastModifiedElement.dataset.second;
+                            const years = Math.floor(days / 365);
+                            const months = Math.floor((days % 365) / 30);
+                            const remainingDays = days % 30;
 
-                        let runtimeString = prefix + ' ';
-                        
-                        if (years > 0) {
-                            runtimeString += `${years} ${yearKey} `;
-                        }
-                        if (months > 0) {
-                            runtimeString += `${months} ${monthKey} `;
-                        }
-                        if (remainingDays > 0) {
-                            runtimeString += `${remainingDays} ${dayKey} `;
-                        }
-                        runtimeString += `${hours} ${hourKey} `;
-                        if (minutes < 10) {
-                            runtimeString += `0${minutes} ${minuteKey} `;
-                        } else {
-                            runtimeString += `${minutes} ${minuteKey} `;
-                        }
-                        if (secs < 10) {
-                            runtimeString += `0${secs} ${secondKey}`;
-                        } else {
-                            runtimeString += `${secs} ${secondKey}`;
+                            const prefix = lastModifiedElement.dataset.prefix;
+                            const yearKey = lastModifiedElement.dataset.year;
+                            const monthKey = lastModifiedElement.dataset.month;
+                            const dayKey = lastModifiedElement.dataset.day;
+                            const hourKey = lastModifiedElement.dataset.hour;
+                            const minuteKey = lastModifiedElement.dataset.minute;
+                            const secondKey = lastModifiedElement.dataset.second;
+
+                            let runtimeString = prefix + ' ';
+                            
+                            if (years > 0) {
+                                runtimeString += `${years} ${yearKey} `;
+                            }
+                            if (months > 0) {
+                                runtimeString += `${months} ${monthKey} `;
+                            }
+                            if (remainingDays > 0) {
+                                runtimeString += `${remainingDays} ${dayKey} `;
+                            }
+                            runtimeString += `${hours} ${hourKey} `;
+                            if (minutes < 10) {
+                                runtimeString += `0${minutes} ${minuteKey} `;
+                            } else {
+                                runtimeString += `${minutes} ${minuteKey} `;
+                            }
+                            if (secs < 10) {
+                                runtimeString += `0${secs} ${secondKey}`;
+                            } else {
+                                runtimeString += `${secs} ${secondKey}`;
+                            }
+
+                            modifiedTimeElement.innerHTML = runtimeString;
                         }
 
-                        document.getElementById("modifiedtime").innerHTML = runtimeString;
-                    }
-                    setInterval(runtime, 1000);
+                        // Clear existing interval to prevent duplicates and memory leaks
+                        if (window.lastModifiedInterval) {
+                            clearInterval(window.lastModifiedInterval);
+                        }
+
+                        // Start new interval and store ID globally
+                        window.lastModifiedInterval = setInterval(runtime, 1000);
+
+                        // Run immediately
+                        runtime();
+                    })();
                 </script>
                 <div class="card-base p-1 mb-0.1">
                     <div class="flex items-center gap-2">

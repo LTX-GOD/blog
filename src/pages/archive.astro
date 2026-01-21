@@ -6,9 +6,25 @@ import MainGridLayout from "@layouts/MainGridLayout.astro";
 import { getSortedPostsList } from "../utils/content-utils";
 
 const sortedPostsList = await getSortedPostsList();
+
+const groups = sortedPostsList.reduce((acc, post) => {
+    const year = new Date(post.data.published).getFullYear();
+    if (!acc[year]) {
+        acc[year] = [];
+    }
+    acc[year].push(post);
+    return acc;
+}, {} as Record<number, typeof sortedPostsList>);
+
+const groupedPostsArray = Object.keys(groups).map((yearStr) => ({
+    year: parseInt(yearStr),
+    posts: groups[parseInt(yearStr)],
+}));
+
+groupedPostsArray.sort((a, b) => b.year - a.year);
 ---
 
 <MainGridLayout title={i18n(I18nKey.archive)}>
-    <ArchivePanel sortedPosts={sortedPostsList} client:only="svelte"></ArchivePanel>
+    <ArchivePanel sortedPosts={sortedPostsList} initialGroups={groupedPostsArray} client:load></ArchivePanel>
 </MainGridLayout>
 

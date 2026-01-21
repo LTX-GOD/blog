@@ -261,10 +261,10 @@ const umamiScripts = umamiConfig.scripts || ""; // 获取Umami scripts配置
 		<slot />
 		
 		<!-- Music Player - 仅在启用时加载 -->
-		{musicPlayerConfig.enable && <MusicPlayer client:load />}
+		{musicPlayerConfig.enable && <MusicPlayer client:idle />}
 		
 		<!-- Pio 看板娘组件 - 仅在启用时加载 -->
-		{pioConfig.enable && <Pio client:load />}
+		{pioConfig.enable && <Pio client:idle />}
 
 		<!-- Linux Boot Sequence Loader -->
 		<BootLoader client:only="svelte" />

@@ -29,6 +29,6 @@ yarn.lock
 # ide
 .idea
 *.iml
-
+.trae
 cache/
 fuwari/

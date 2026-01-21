@@ -5,10 +5,8 @@ import type {
 	FooterConfig,
 	FullscreenWallpaperConfig,
 	LicenseConfig,
-	MusicPlayerConfig,
 	NavBarConfig,
 	ProfileConfig,
-	SakuraConfig,
 	SidebarLayoutConfig,
 	SiteConfig,
 } from "./types/config";
@@ -227,9 +225,7 @@ export const announcementConfig: AnnouncementConfig = {
 	},
 };
 
-export const musicPlayerConfig: MusicPlayerConfig = {
-	enable: false, // 启用音乐播放器功能
-};
+
 
 export const footerConfig: FooterConfig = {
 	enable: true, // 是否启用Footer HTML注入功能
@@ -352,61 +348,14 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 	},
 };
 
-export const sakuraConfig: SakuraConfig = {
-	enable: false, // 默认关闭樱花特效
-	sakuraNum: 21, // 樱花数量
-	limitTimes: -1, // 樱花越界限制次数，-1为无限循环
-	size: {
-		min: 0.5, // 樱花最小尺寸倍数
-		max: 1.1, // 樱花最大尺寸倍数
-	},
-	speed: {
-		horizontal: {
-			min: -1.7, // 水平移动速度最小值
-			max: -1.2, // 水平移动速度最大值
-		},
-		vertical: {
-			min: 1.5, // 垂直移动速度最小值
-			max: 2.2, // 垂直移动速度最大值
-		},
-		rotation: 0.03, // 旋转速度
-	},
-	zIndex: 100, // 层级，确保樱花在合适的层级显示
-};
 
-// Pio 看板娘配置
-export const pioConfig: import("./types/config").PioConfig = {
-	enable: false, // 启用看板娘
-	models: ["/pio/models/pio/model.json"], // 默认模型路径
-	position: "left", // 默认位置在右侧
-	width: 280, // 默认宽度
-	height: 250, // 默认高度
-	mode: "draggable", // 默认为可拖拽模式
-	hiddenOnMobile: true, // 默认在移动设备上隐藏
-	dialog: {
-		welcome: "Welcome to Mizuki Website!", // 欢迎词
-		touch: [
-			"What are you doing?",
-			"Stop touching me!",
-			"HENTAI!",
-			"Don't bully me like that!",
-		], // 触摸提示
-		home: "Click here to go back to homepage!", // 首页提示
-		skin: ["Want to see my new outfit?", "The new outfit looks great~"], // 换装提示
-		close: "QWQ See you next time~", // 关闭提示
-		link: "https://github.com/matsuzaka-yuki/Mizuki", // 关于链接
-	},
-};
 
 // 导出所有配置的统一接口
 export const widgetConfigs = {
 	profile: profileConfig,
 	announcement: announcementConfig,
-	music: musicPlayerConfig,
 	layout: sidebarLayoutConfig,
-	sakura: sakuraConfig,
 	fullscreenWallpaper: fullscreenWallpaperConfig,
-	pio: pioConfig, // 添加 pio 配置
 } as const;
 
 export const umamiConfig = {

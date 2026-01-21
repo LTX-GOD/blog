@@ -3,21 +3,19 @@ import type { MarkdownHeading } from "astro";
 import { widgetManager } from "../../utils/widget-manager";
 import Announcement from "./Announcement.astro";
 import Categories from "./Categories.astro";
-import MusicPlayer from "./MusicPlayer.svelte";
 import Profile from "./Profile.astro";
 import Tags from "./Tags.astro";
 import TOC from "./TOC.astro";
+import type { WidgetComponentConfig } from "@/types/config";
 
 interface Props {
 	class?: string;
 	headings?: MarkdownHeading[];
+	topComponents: WidgetComponentConfig[];
+	stickyComponents: WidgetComponentConfig[];
 }
 
-const { class: className, headings } = Astro.props;
-
-// 获取配置的组件列表
-const topComponents = widgetManager.getComponentsByPosition("top");
-const stickyComponents = widgetManager.getComponentsByPosition("sticky");
+const { class: className, headings, topComponents, stickyComponents } = Astro.props;
 
 // 组件映射表
 const componentMap = {
@@ -26,7 +24,6 @@ const componentMap = {
 	categories: Categories,
 	tags: Tags,
 	toc: TOC,
-	"music-player": MusicPlayer,
 };
 
 // 渲染组件的辅助函数

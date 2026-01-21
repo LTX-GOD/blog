@@ -191,9 +191,7 @@ export type AnnouncementConfig = {
 	};
 };
 
-export type MusicPlayerConfig = {
-	enable: boolean; // 是否启用音乐播放器功能
-};
+
 
 export type FooterConfig = {
 	enable: boolean; // 是否启用Footer HTML注入功能
@@ -207,8 +205,6 @@ export type WidgetComponentType =
 	| "categories"
 	| "tags"
 	| "toc"
-	| "music-player"
-	| "pio" // 添加 pio 组件类型
 	| "custom";
 
 export type WidgetComponentConfig = {
@@ -249,27 +245,7 @@ export type SidebarLayoutConfig = {
 	};
 };
 
-export type SakuraConfig = {
-	enable: boolean; // 是否启用樱花特效
-	sakuraNum: number; // 樱花数量，默认21
-	limitTimes: number; // 樱花越界限制次数，-1为无限循环
-	size: {
-		min: number; // 樱花最小尺寸倍数
-		max: number; // 樱花最大尺寸倍数
-	};
-	speed: {
-		horizontal: {
-			min: number; // 水平移动速度最小值
-			max: number; // 水平移动速度最大值
-		};
-		vertical: {
-			min: number; // 垂直移动速度最小值
-			max: number; // 垂直移动速度最大值
-		};
-		rotation: number; // 旋转速度
-	};
-	zIndex: number; // 层级，确保樱花在合适的层级显示
-};
+
 
 export type FullscreenWallpaperConfig = {
 	enable: boolean; // 是否启用全屏壁纸功能
@@ -290,28 +266,4 @@ export type FullscreenWallpaperConfig = {
 	blur?: number; // 背景模糊程度，单位px
 };
 
-/**
- * Pio 看板娘配置
- */
-export type PioConfig = {
-	enable: boolean; // 是否启用看板娘
-	models?: string[]; // 模型文件路径数组
-	position?: "left" | "right"; // 看板娘位置
-	width?: number; // 看板娘宽度
-	height?: number; // 看板娘高度
-	mode?: "static" | "fixed" | "draggable"; // 展现模式
-	hiddenOnMobile?: boolean; // 是否在移动设备上隐藏
-	dialog?: {
-		welcome?: string | string[]; // 欢迎词
-		touch?: string | string[]; // 触摸提示
-		home?: string; // 首页提示
-		skin?: [string, string]; // 换装提示 [切换前, 切换后]
-		close?: string; // 关闭提示
-		link?: string; // 关于链接
-		custom?: Array<{
-			selector: string; // CSS选择器
-			type: "read" | "link"; // 类型
-			text?: string; // 自定义文本
-		}>;
-	};
-};
+

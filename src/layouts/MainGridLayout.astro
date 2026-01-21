@@ -14,6 +14,7 @@ import {
 	fullscreenWallpaperConfig,
 	sidebarLayoutConfig,
 	siteConfig,
+	navBarConfig,
 } from "../config";
 import {
 	BANNER_HEIGHT,
@@ -169,6 +170,10 @@ const shouldEnableTransparency =
 const transparentClass = shouldEnableTransparency
 	? "wallpaper-transparent"
 	: "";
+
+// 获取侧边栏组件配置
+const topComponents = widgetManager.getComponentsByPosition("top");
+const stickyComponents = widgetManager.getComponentsByPosition("sticky");
 ---
 
 <Layout title={title} banner={banner} description={description} lang={lang} setOGTypeArticle={setOGTypeArticle} postSlug={postSlug}>
@@ -194,7 +199,7 @@ const transparentClass = shouldEnableTransparency
 <slot slot="head" name="head"></slot>
 <div id="top-row" class="z-50 pointer-events-none relative transition-all duration-700 max-w-[var(--page-width)] px-0 md:px-4 mx-auto" class:list={[""]}>
     <div id="navbar-wrapper" class="pointer-events-auto sticky top-0 transition-all">
-        <Navbar></Navbar>
+        <Navbar siteConfig={siteConfig} navBarConfig={navBarConfig}></Navbar>
     </div>
 </div>
 
@@ -369,7 +374,7 @@ const transparentClass = shouldEnableTransparency
             </a>}
 
 
-            {(mobileShowSidebar || tabletShowSidebar || desktopShowSidebar) && <SideBar class={`${sidebarClass} ${transparentClass}`} headings={headings}></SideBar>}
+            {(mobileShowSidebar || tabletShowSidebar || desktopShowSidebar) && <SideBar class={`${sidebarClass} ${transparentClass}`} headings={headings} topComponents={topComponents} stickyComponents={stickyComponents}></SideBar>}
 
             <main id="swup-container" class={`${mainContentClass} transition-main`}>
                 <div id="content-wrapper" class="onload-animation transition-leaving">

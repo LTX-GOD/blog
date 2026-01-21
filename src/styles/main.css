@@ -168,13 +168,15 @@ html {
     }
 
     .card-base {
-        @apply rounded-[var(--radius-large)] overflow-hidden bg-[var(--card-bg)] transition-all duration-300 border border-black/5 dark:border-white/5 shadow-sm hover:shadow-md hover:-translate-y-1;
+        @apply rounded-xl overflow-hidden transition-all duration-300 border border-black/5 dark:border-white/5 shadow-sm hover:shadow-md hover:-translate-y-1;
+        background-color: color-mix(in srgb, var(--card-bg), transparent 20%);
         backdrop-filter: blur(20px) saturate(180%);
         -webkit-backdrop-filter: blur(20px) saturate(180%);
     }
 
     .card-base-transparent {
-        @apply rounded-[var(--radius-large)] overflow-hidden bg-[var(--card-bg-transparent)] backdrop-blur-sm transition-all duration-300 border border-black/5 dark:border-white/5 shadow-sm hover:shadow-md;
+        @apply rounded-xl overflow-hidden backdrop-blur-md transition-all duration-300 border border-black/5 dark:border-white/5 shadow-sm hover:shadow-md;
+        background-color: color-mix(in srgb, var(--card-bg-transparent), transparent 20%);
         backdrop-filter: blur(20px) saturate(180%);
         -webkit-backdrop-filter: blur(20px) saturate(180%);
     }

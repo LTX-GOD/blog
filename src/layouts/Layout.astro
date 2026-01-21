@@ -4,10 +4,8 @@ import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/700.css";
 
 import ConfigCarrier from "@components/ConfigCarrier.astro";
-import MusicPlayer from "@components/widget/MusicPlayer.svelte";
-import Pio from "@components/widget/Pio.svelte"; // 使用 Svelte 版本的 Pio 组件
 import BootLoader from "@components/misc/BootLoader.svelte";
-import { profileConfig, siteConfig, musicPlayerConfig, pioConfig } from "@/config";
+import { profileConfig, siteConfig } from "@/config";
 import { widgetConfigs } from "../config";
 import { umamiConfig } from "../config";
 import {
@@ -241,9 +239,6 @@ const umamiScripts = umamiConfig.scripts || ""; // 获取Umami scripts配置
 
 		<slot name="head"></slot>
 
-		<!-- Pio 看板娘样式 - 仅在启用时加载 -->
-		{pioConfig.enable && <link rel="stylesheet" href="/pio/static/pio.css" />}
-
 		<link rel="alternate" type="application/rss+xml" title={profileConfig.name} href={`${Astro.site}rss.xml`}/>
 
 		<!-- Umami Analytics -->
@@ -260,30 +255,11 @@ const umamiScripts = umamiConfig.scripts || ""; // 获取Umami scripts配置
 		<ConfigCarrier></ConfigCarrier>
 		<slot />
 		
-		<!-- Music Player - 仅在启用时加载 -->
-		{musicPlayerConfig.enable && <MusicPlayer client:idle />}
-		
-		<!-- Pio 看板娘组件 - 仅在启用时加载 -->
-		{pioConfig.enable && <Pio client:idle />}
-
 		<!-- Linux Boot Sequence Loader -->
 		<BootLoader client:only="svelte" />
 		
 		<!-- increase the page height during page transition to prevent the scrolling animation from jumping -->
 		<div id="page-height-extend" class="hidden h-[300vh]"></div>
-
-		<!-- Sakura Effect -->
-		{(widgetConfigs.sakura as SakuraConfig)?.enable && (
-			<script is:inline define:vars={{ sakuraConfig: widgetConfigs.sakura }}>
-				if (sakuraConfig && sakuraConfig.enable) {
-					import('/src/utils/sakura-manager.ts').then(({ initSakura }) => {
-						requestIdleCallback(() => {
-							initSakura(sakuraConfig);
-						});
-					}).catch(e => console.error('Failed to load sakura effect:', e));
-				}
-			</script>
-		)}
 		
 		
 	</body>

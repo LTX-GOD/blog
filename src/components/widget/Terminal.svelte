@@ -120,28 +120,29 @@ projects/`,
     });
 </script>
 
-<div class="w-full max-w-[var(--page-width)] mx-auto mb-8 rounded-xl overflow-hidden bg-[#1a1b26]/90 backdrop-blur-md border border-white/10 shadow-2xl font-mono text-sm" on:click={() => inputElement && inputElement.focus()}>
-    <div class="flex items-center justify-between px-4 py-2 bg-[#1f2335]/90 border-b border-white/10">
+<div class="hidden md:block w-full max-w-[var(--page-width)] mx-auto mb-8 rounded-xl overflow-hidden bg-white/50 dark:bg-[#1a1b26]/90 backdrop-blur-md border border-black/5 dark:border-white/10 shadow-sm dark:shadow-2xl font-mono text-sm transition-colors duration-300" on:click={() => inputElement && inputElement.focus()}>
+    <div class="flex items-center justify-between px-4 py-2 bg-black/5 dark:bg-[#1f2335]/90 border-b border-black/5 dark:border-white/10 transition-colors duration-300">
         <div class="flex gap-2">
             <div class="w-3 h-3 rounded-full bg-[#ff5f56]"></div>
             <div class="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
             <div class="w-3 h-3 rounded-full bg-[#27c93f]"></div>
         </div>
-        <div class="text-[#a9b1d6] text-xs">visitor@zsm: ~</div>
+        <div class="text-black/50 dark:text-[#a9b1d6] text-xs">visitor@zsm: ~</div>
         <div class="w-10"></div> <!-- Spacer for centering -->
     </div>
-    <div id="terminal-content" class="p-4 h-64 overflow-y-auto text-[#a9b1d6] scrollbar-hide">
+    <div id="terminal-content" class="p-4 h-64 overflow-y-auto text-black/80 dark:text-[#a9b1d6] scrollbar-hide">
         {#each history as line}
             <div class="whitespace-pre-wrap mb-1">{line}</div>
         {/each}
         <div class="flex items-center">
-            <span class="text-[#7aa2f7] mr-2">visitor@zsm:~$</span>
+            <span class="text-[var(--primary)] dark:text-[#7aa2f7] mr-2">visitor@zsm:~$</span>
             <input
                 bind:this={inputElement}
                 bind:value={inputValue}
                 on:keydown={handleKeydown}
                 type="text"
-                class="bg-transparent border-none outline-none flex-grow text-[#c0caf5] caret-[#7aa2f7]"
+                aria-label="Terminal Input"
+                class="bg-transparent border-none outline-none flex-grow text-black dark:text-[#c0caf5] caret-[var(--primary)] dark:caret-[#7aa2f7]"
                 autocomplete="off"
                 spellcheck="false"
             />

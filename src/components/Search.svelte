@@ -1,6 +1,4 @@
 <script lang="ts">
-import I18nKey from "@i18n/i18nKey";
-import { i18n } from "@i18n/translation";
 import Icon from "@iconify/svelte";
 import { url } from "@utils/url-utils.ts";
 import { onMount } from "svelte";
@@ -14,6 +12,13 @@ let pagefindLoaded = false;
 let initialized = false;
 let searchInput: HTMLInputElement;
 let isOpen = false;
+let searchDebounceTimer: ReturnType<typeof setTimeout> | undefined;
+let searchToken = 0;
+
+const MIN_QUERY_LENGTH = 2;
+const MAX_RESULTS = 8;
+const SEARCH_DEBOUNCE_MS = 180;
+const searchCache = new Map<string, SearchResult[]>();
 
 const fakeResult: SearchResult[] = [
 	{
@@ -45,6 +50,12 @@ const closeSearch = () => {
 	isOpen = false;
 	keyword = "";
 	result = [];
+	isSearching = false;
+	searchToken += 1;
+	if (searchDebounceTimer) {
+		clearTimeout(searchDebounceTimer);
+		searchDebounceTimer = undefined;
+	}
 	document.body.style.overflow = "";
 };
 
@@ -68,8 +79,32 @@ const handleResultClick = (event: Event, url: string): void => {
 	navigateToPage(url);
 };
 
+const normalizeKeyword = (kw: string): string => kw.trim().toLowerCase();
+
+const scheduleSearch = (kw: string): void => {
+	if (!initialized) {
+		return;
+	}
+
+	if (searchDebounceTimer) {
+		clearTimeout(searchDebounceTimer);
+		searchDebounceTimer = undefined;
+	}
+
+	const normalizedKeyword = normalizeKeyword(kw);
+	if (!normalizedKeyword || normalizedKeyword.length < MIN_QUERY_LENGTH) {
+		result = [];
+		isSearching = false;
+		return;
+	}
+
+	searchDebounceTimer = setTimeout(() => {
+		void search(normalizedKeyword);
+	}, SEARCH_DEBOUNCE_MS);
+};
+
 const search = async (kw: string): Promise<void> => {
-	if (!kw) {
+	if (!kw || kw.length < MIN_QUERY_LENGTH) {
 		result = [];
 		return;
 	}
@@ -79,15 +114,20 @@ const search = async (kw: string): Promise<void> => {
 	}
 
 	isSearching = true;
+	const currentSearchToken = ++searchToken;
 
 	try {
 		let searchResults: SearchResult[] = [];
+		const cachedResults = searchCache.get(kw);
+		if (cachedResults) {
+			result = cachedResults;
+			return;
+		}
 
 		if (import.meta.env.PROD && pagefindLoaded && window.pagefind) {
 			const response = await window.pagefind.search(kw);
-			searchResults = await Promise.all(
-				response.results.map((item) => item.data()),
-			);
+			const topResults = response.results.slice(0, MAX_RESULTS);
+			searchResults = await Promise.all(topResults.map((item) => item.data()));
 		} else if (import.meta.env.DEV) {
 			searchResults = fakeResult;
 		} else {
@@ -95,12 +135,19 @@ const search = async (kw: string): Promise<void> => {
 			console.error("Pagefind is not available in production environment.");
 		}
 
-		result = searchResults;
+		searchCache.set(kw, searchResults);
+		if (currentSearchToken === searchToken) {
+			result = searchResults;
+		}
 	} catch (error) {
 		console.error("Search error:", error);
-		result = [];
+		if (currentSearchToken === searchToken) {
+			result = [];
+		}
 	} finally {
-		isSearching = false;
+		if (currentSearchToken === searchToken) {
+			isSearching = false;
+		}
 	}
 };
 
@@ -112,6 +159,21 @@ onMount(() => {
 			!!window.pagefind &&
 			typeof window.pagefind.search === "function";
 		console.log("Pagefind status on init:", pagefindLoaded);
+
+		if (keyword) {
+			scheduleSearch(keyword);
+		}
+	};
+
+	const onPagefindReady = () => {
+		console.log("Pagefind ready event received.");
+		initializeSearch();
+	};
+	const onPagefindLoadError = () => {
+		console.warn(
+			"Pagefind load error event received. Search functionality will be limited.",
+		);
+		initializeSearch();
 	};
 
 	if (import.meta.env.DEV) {
@@ -120,16 +182,12 @@ onMount(() => {
 		);
 		initializeSearch();
 	} else {
-		document.addEventListener("pagefindready", () => {
-			console.log("Pagefind ready event received.");
+		if (window.pagefind && typeof window.pagefind.search === "function") {
 			initializeSearch();
-		});
-		document.addEventListener("pagefindloaderror", () => {
-			console.warn(
-				"Pagefind load error event received. Search functionality will be limited.",
-			);
-			initializeSearch();
-		});
+		} else {
+			document.addEventListener("pagefindready", onPagefindReady);
+			document.addEventListener("pagefindloaderror", onPagefindLoadError);
+		}
 
 		setTimeout(() => {
 			if (!initialized) {
@@ -141,14 +199,18 @@ onMount(() => {
 
 	window.addEventListener("keydown", handleKeydown);
 	return () => {
+		if (searchDebounceTimer) {
+			clearTimeout(searchDebounceTimer);
+		}
+		document.removeEventListener("pagefindready", onPagefindReady);
+		document.removeEventListener("pagefindloaderror", onPagefindLoadError);
 		window.removeEventListener("keydown", handleKeydown);
+		document.body.style.overflow = "";
 	};
 });
 
-$: if (initialized && keyword) {
-	(async () => {
-		await search(keyword);
-	})();
+$: if (initialized) {
+	scheduleSearch(keyword);
 }
 </script>
 
@@ -242,7 +304,7 @@ $: if (initialized && keyword) {
         <!-- Status Line -->
         <div class="px-4 py-1 bg-[var(--card-bg)] border-t border-[var(--primary)]/20 flex justify-between items-center text-[10px] text-[var(--content-meta)] font-mono">
             <span>{result.length} results</span>
-            <span>{keyword ? 'searching...' : 'ready'}</span>
+            <span>{keyword ? (isSearching ? 'searching...' : 'ready') : 'idle'}</span>
         </div>
     </div>
 </div>

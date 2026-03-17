@@ -1,4 +1,4 @@
-export { }
+export {};
 
 declare global {
 	interface HTMLElementTagNameMap {
@@ -16,7 +16,9 @@ declare global {
 					data: () => Promise<SearchResult>;
 				}>;
 			}>;
+			options?: (options: Record<string, unknown>) => Promise<void>;
 		};
+		pagefindLoadingPromise?: Promise<void>;
 
 		mobileTOCInit?: () => void;
 		__iconifyLoader?: any;
@@ -52,4 +54,3 @@ declare global {
 		sub_results?: SearchResult[];
 	}
 }
-

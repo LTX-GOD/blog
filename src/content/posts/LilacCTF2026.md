@@ -4,9 +4,9 @@ published: 2026-01-26
 pubDate: 2026-01-26
 description: LilacCTF2026 zsm Bluebud
 pinned: false
-tags: ["CTF-web"]
+tags: ["Bluebud-xctf"]
 author: zsm
-category: web
+category: Bluebud
 draft: false
 licenseName: "MIT"
 lang: "zh_CN"

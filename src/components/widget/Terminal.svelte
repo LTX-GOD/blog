@@ -1,7 +1,8 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
+    import { onMount, tick } from 'svelte';
 
     let inputElement: HTMLInputElement;
+    let mounted = false;
     let history: string[] = [
         "Welcome to Zsm's Blog Terminal v1.0.0",
         "Type 'help' to see available commands.",
@@ -93,10 +94,10 @@ projects/`,
                 history = [...history, `visitor@zsm:~$ `];
             }
             inputValue = "";
-            setTimeout(() => {
+            tick().then(() => {
                 const terminalContent = document.getElementById('terminal-content');
                 if (terminalContent) terminalContent.scrollTop = terminalContent.scrollHeight;
-            }, 0);
+            });
         } else if (e.key === 'ArrowUp') {
             e.preventDefault();
             if (historyIndex > 0) {
@@ -116,11 +117,14 @@ projects/`,
     }
 
     onMount(() => {
-        if (inputElement) inputElement.focus();
+        mounted = true;
+        tick().then(() => {
+            if (inputElement) inputElement.focus();
+        });
     });
 </script>
 
-<div class="hidden md:block w-full max-w-[var(--page-width)] mx-auto mb-8 rounded-xl overflow-hidden bg-white/50 dark:bg-[#1a1b26]/90 backdrop-blur-md border border-black/5 dark:border-white/10 shadow-sm dark:shadow-2xl font-mono text-sm transition-colors duration-300" on:click={() => inputElement && inputElement.focus()}>
+<div class="hidden md:block w-full max-w-[var(--page-width)] mx-auto mb-8 rounded-xl overflow-hidden bg-white/50 dark:bg-[#1a1b26]/90 backdrop-blur-md border border-black/5 dark:border-white/10 shadow-sm dark:shadow-2xl font-mono text-sm transition-colors duration-300" on:click={() => mounted && inputElement?.focus()}>
     <div class="flex items-center justify-between px-4 py-2 bg-black/5 dark:bg-[#1f2335]/90 border-b border-black/5 dark:border-white/10 transition-colors duration-300">
         <div class="flex gap-2">
             <div class="w-3 h-3 rounded-full bg-[#ff5f56]"></div>

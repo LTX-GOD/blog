@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
+    import { onMount, tick } from 'svelte';
     import { fade } from 'svelte/transition';
 
     let visible = false;
@@ -42,11 +42,10 @@
         for (const msg of bootMessages) {
             await new Promise(r => setTimeout(r, Math.random() * 100 + 50));
             logs = [...logs, msg];
-            if (logContainer) {
-                logContainer.scrollTop = logContainer.scrollHeight;
-            }
+            await tick();
+            logContainer?.scrollTo({ top: logContainer.scrollHeight, behavior: 'instant' });
         }
-        
+
         await new Promise(r => setTimeout(r, 800));
         visible = false;
         sessionStorage.setItem('zsm-boot-sequence', 'true');

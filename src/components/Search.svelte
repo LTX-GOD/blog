@@ -1,7 +1,7 @@
 <script lang="ts">
 import Icon from "@iconify/svelte";
 import { url } from "@utils/url-utils.ts";
-import { onMount } from "svelte";
+import { onMount, tick } from "svelte";
 import type { SearchResult } from "@/global";
 import { navigateToPage } from "@utils/navigation-utils";
 
@@ -18,6 +18,7 @@ let searchToken = 0;
 const MIN_QUERY_LENGTH = 2;
 const MAX_RESULTS = 8;
 const SEARCH_DEBOUNCE_MS = 180;
+const MAX_CACHE_SIZE = 50;
 const searchCache = new Map<string, SearchResult[]>();
 
 const fakeResult: SearchResult[] = [
@@ -38,11 +39,10 @@ const fakeResult: SearchResult[] = [
 	},
 ];
 
-const openSearch = () => {
+const openSearch = async () => {
 	isOpen = true;
-	setTimeout(() => {
-		searchInput?.focus();
-	}, 100);
+	await tick();
+	searchInput?.focus();
 	document.body.style.overflow = "hidden";
 };
 
@@ -136,6 +136,10 @@ const search = async (kw: string): Promise<void> => {
 		}
 
 		searchCache.set(kw, searchResults);
+		if (searchCache.size > MAX_CACHE_SIZE) {
+			const firstKey = searchCache.keys().next().value;
+			if (firstKey) searchCache.delete(firstKey);
+		}
 		if (currentSearchToken === searchToken) {
 			result = searchResults;
 		}

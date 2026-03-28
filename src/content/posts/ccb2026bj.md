@@ -39,6 +39,8 @@ if username == 'admin' and h2 == "7022cd14c42ff272619d6beacdc9ffde":
 
 打的时候我先爆破了一下密码，双重md5按理来说没人爆破来着()，密码是`secret`，弱密码好像是非预期？因为我直接爆破出来密码了，也导致我`fix`没有注意到这里
 
+![image](./attachments/260327-151932.avif)
+
 ```python
 def is_logged_in() -> bool:
     return flask.request.cookies.get("visited") == "yes" and bool(flask.request.cookies.get("user"))

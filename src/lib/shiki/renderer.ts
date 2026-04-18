@@ -12,6 +12,7 @@ import { getCodeHash } from './hash';
 import { bundledThemes } from 'shiki';
 import fs from 'node:fs';
 import path from 'node:path';
+import { normalizeCodeLanguage } from '../../utils/code-language';
 
 const CACHE_DIR = path.join(process.cwd(), 'node_modules', '.cache');
 const CACHE_FILE = path.join(CACHE_DIR, 'shiki-cache.json');
@@ -93,10 +94,7 @@ async function getEc() {
 }
 
 export async function renderWithCache(code: string, lang: string, meta: string) {
-    // Handle aliases
-    if (lang === 'nodejs' || lang === 'node') {
-        lang = 'javascript';
-    }
+    lang = normalizeCodeLanguage(lang) || 'text';
 
     const key = getCodeHash(code, lang, meta || '');
 

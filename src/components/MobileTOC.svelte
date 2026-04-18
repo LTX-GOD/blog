@@ -1,9 +1,12 @@
 <script lang="ts">
-import Icon from "@iconify/svelte";
+import ClientIcon from "@components/ui/ClientIcon.svelte";
 import { onMount } from "svelte";
-import I18nKey from "../i18n/i18nKey";
-import { i18n } from "../i18n/translation";
 import { navigateToPage } from "../utils/navigation-utils";
+
+export let postListLabel = "文章列表";
+export let tableOfContentsLabel = "目录";
+export let emptyHomeLabel = "暂无文章";
+export let emptyTocLabel = "当前页面没有目录";
 
 let tocItems: Array<{ id: string; text: string; level: number }> = [];
 let postItems: Array<{
@@ -15,7 +18,6 @@ let postItems: Array<{
 let activeId = "";
 let observer: IntersectionObserver;
 let isHomePage = false;
-let swupReady = false;
 
 const togglePanel = () => {
 	const panel = document.getElementById("mobile-toc-panel");
@@ -157,37 +159,8 @@ const setupIntersectionObserver = () => {
 	});
 };
 
-const checkSwupAvailability = () => {
-	if (typeof window !== "undefined") {
-		// 检查Swup是否已加载
-		swupReady = !!(window as any).swup;
-
-		// 如果Swup还未加载，监听其加载事件
-		if (!swupReady) {
-			const checkSwup = () => {
-				if ((window as any).swup) {
-					swupReady = true;
-					document.removeEventListener("swup:enable", checkSwup);
-				}
-			};
-
-			// 监听Swup启用事件
-			document.addEventListener("swup:enable", checkSwup);
-
-			// 设置超时检查
-			setTimeout(() => {
-				if ((window as any).swup) {
-					swupReady = true;
-					document.removeEventListener("swup:enable", checkSwup);
-				}
-			}, 1000);
-		}
-	}
-};
-
 const init = () => {
 	checkIsHomePage();
-	checkSwupAvailability();
 	if (isHomePage) {
 		generatePostList();
 	} else {
@@ -225,7 +198,7 @@ if (typeof window !== "undefined") {
 	id="mobile-toc-switch"
 	class="btn-plain scale-animation rounded-[var(--radius-large)] h-11 w-11 active:scale-90 lg:!hidden"
 >
-	<Icon icon="material-symbols:format-list-bulleted" class="text-[1.25rem]" />
+	<ClientIcon name="list" className="text-[1.25rem] w-5 h-5" />
 </button>
 
 <!-- Mobile TOC Panel -->
@@ -235,21 +208,21 @@ if (typeof window !== "undefined") {
 		top-20 left-4 md:left-[unset] right-4 shadow-2xl rounded-[var(--radius-large)] p-4"
 >
 	<div class="flex items-center justify-between mb-4">
-		<h3 class="text-lg font-bold text-[var(--primary)]">{isHomePage ? i18n(I18nKey.postList) : i18n(I18nKey.tableOfContents)}</h3>
+		<h3 class="text-lg font-bold text-[var(--primary)]">{isHomePage ? postListLabel : tableOfContentsLabel}</h3>
 		<button 
 			on:click={togglePanel}
 			aria-label="Close TOC"
 			class="btn-plain rounded-[var(--radius-large)] h-8 w-8 active:scale-90"
 		>
-			<Icon icon="material-symbols:close" class="text-[1rem]" />
+			<ClientIcon name="close" className="text-[1rem] w-4 h-4" />
 		</button>
 	</div>
 
 	{#if isHomePage}
 		{#if postItems.length === 0}
 			<div class="text-center py-8 text-black/50 dark:text-white/50">
-				<Icon icon="material-symbols:article-outline" class="text-2xl mb-2" />
-				<p>暂无文章</p>
+				<ClientIcon name="article" className="text-2xl mb-2 w-8 h-8 mx-auto" />
+				<p>{emptyHomeLabel}</p>
 			</div>
 		{:else}
 			<div class="post-content">
@@ -260,7 +233,7 @@ if (typeof window !== "undefined") {
 					>
 						<div class="post-title">
 							{#if post.pinned}
-								<Icon icon="mdi:pin" class="pinned-icon" />
+								<ClientIcon name="pin" className="pinned-icon w-3.5 h-3.5" />
 							{/if}
 							{post.title}
 						</div>
@@ -274,8 +247,8 @@ if (typeof window !== "undefined") {
 	{:else}
 		{#if tocItems.length === 0}
 			<div class="text-center py-8 text-black/50 dark:text-white/50">
-				<Icon icon="material-symbols:article-outline" class="text-2xl mb-2" />
-				<p>当前页面没有目录</p>
+				<ClientIcon name="article" className="text-2xl mb-2 w-8 h-8 mx-auto" />
+				<p>{emptyTocLabel}</p>
 			</div>
 		{:else}
 			<div class="toc-content">

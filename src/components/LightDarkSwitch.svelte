@@ -1,6 +1,6 @@
 <script lang="ts">
 import { DARK_MODE, LIGHT_MODE } from "@constants/constants.ts";
-import Icon from "@iconify/svelte";
+import ClientIcon from "./ui/ClientIcon.svelte";
 import {
 	getStoredTheme,
 	setTheme,
@@ -8,7 +8,7 @@ import {
 import type { LIGHT_DARK_MODE } from "@/types/config.ts";
 
 const seq: LIGHT_DARK_MODE[] = [LIGHT_MODE, DARK_MODE];
-let mode: LIGHT_DARK_MODE = $state(getStoredTheme());
+let mode: LIGHT_DARK_MODE = $state(LIGHT_MODE);
 
 function switchScheme(newMode: LIGHT_DARK_MODE) {
 	mode = newMode;
@@ -27,6 +27,7 @@ function toggleScheme() {
 
 // 添加Swup钩子监听，确保在页面切换后同步主题状态
 if (typeof window !== 'undefined') {
+  mode = getStoredTheme();
   // 监听Swup的内容替换事件
   const handleContentReplace = () => {
     // 使用requestAnimationFrame确保在下一帧更新状态，避免渲染冲突
@@ -64,10 +65,10 @@ if (typeof window !== 'undefined') {
 <div class="relative z-50">
     <button aria-label="Light/Dark Mode" class="relative btn-plain scale-animation rounded-[var(--radius-large)] h-11 w-11 active:scale-90" id="scheme-switch" onclick={toggleScheme}>
         <div class="absolute" class:opacity-0={mode !== LIGHT_MODE}>
-            <Icon icon="material-symbols:wb-sunny-outline-rounded" class="text-[1.25rem]"></Icon>
+            <ClientIcon name="sun" className="text-[1.25rem] w-5 h-5" />
         </div>
         <div class="absolute" class:opacity-0={mode !== DARK_MODE}>
-            <Icon icon="material-symbols:dark-mode-outline-rounded" class="text-[1.25rem]"></Icon>
+            <ClientIcon name="moon" className="text-[1.25rem] w-5 h-5" />
         </div>
     </button>
 </div>

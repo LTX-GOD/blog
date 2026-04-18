@@ -1,5 +1,5 @@
 <script lang="ts">
-import Icon from "@iconify/svelte";
+import ClientIcon from "@components/ui/ClientIcon.svelte";
 import { url } from "@utils/url-utils.ts";
 import { onMount, tick } from "svelte";
 import type { SearchResult } from "@/global";
@@ -20,6 +20,7 @@ const MAX_RESULTS = 8;
 const SEARCH_DEBOUNCE_MS = 180;
 const MAX_CACHE_SIZE = 50;
 const searchCache = new Map<string, SearchResult[]>();
+const PAGEFIND_SCRIPT_URL = `${import.meta.env.BASE_URL}pagefind/pagefind.js`;
 
 const fakeResult: SearchResult[] = [
 	{
@@ -44,6 +45,7 @@ const openSearch = async () => {
 	await tick();
 	searchInput?.focus();
 	document.body.style.overflow = "hidden";
+	void ensurePagefindLoaded();
 };
 
 const closeSearch = () => {
@@ -81,6 +83,46 @@ const handleResultClick = (event: Event, url: string): void => {
 
 const normalizeKeyword = (kw: string): string => kw.trim().toLowerCase();
 
+const ensurePagefindLoaded = async (): Promise<void> => {
+	if (import.meta.env.DEV) {
+		initialized = true;
+		pagefindLoaded = false;
+		return;
+	}
+
+	if (pagefindLoaded && window.pagefind) {
+		initialized = true;
+		return;
+	}
+
+	if (window.pagefindLoadingPromise) {
+		await window.pagefindLoadingPromise;
+		return;
+	}
+
+	window.pagefindLoadingPromise = (async () => {
+		try {
+			const pagefind = await import(/* @vite-ignore */ PAGEFIND_SCRIPT_URL);
+			await pagefind.options({
+				excerptLength: 20,
+			});
+			window.pagefind = pagefind;
+			pagefindLoaded = true;
+			initialized = true;
+			document.dispatchEvent(new CustomEvent("pagefindready"));
+		} catch (error) {
+			console.error("Failed to load Pagefind:", error);
+			pagefindLoaded = false;
+			initialized = true;
+			document.dispatchEvent(new CustomEvent("pagefindloaderror"));
+		} finally {
+			window.pagefindLoadingPromise = undefined;
+		}
+	})();
+
+	await window.pagefindLoadingPromise;
+};
+
 const scheduleSearch = (kw: string): void => {
 	if (!initialized) {
 		return;
@@ -110,7 +152,10 @@ const search = async (kw: string): Promise<void> => {
 	}
 
 	if (!initialized) {
-		return;
+		await ensurePagefindLoaded();
+		if (!initialized) {
+			return;
+		}
 	}
 
 	isSearching = true;
@@ -157,12 +202,11 @@ const search = async (kw: string): Promise<void> => {
 
 onMount(() => {
 	const initializeSearch = () => {
-		initialized = true;
 		pagefindLoaded =
 			typeof window !== "undefined" &&
 			!!window.pagefind &&
 			typeof window.pagefind.search === "function";
-		console.log("Pagefind status on init:", pagefindLoaded);
+		initialized = import.meta.env.DEV || pagefindLoaded;
 
 		if (keyword) {
 			scheduleSearch(keyword);
@@ -170,7 +214,6 @@ onMount(() => {
 	};
 
 	const onPagefindReady = () => {
-		console.log("Pagefind ready event received.");
 		initializeSearch();
 	};
 	const onPagefindLoadError = () => {
@@ -181,9 +224,6 @@ onMount(() => {
 	};
 
 	if (import.meta.env.DEV) {
-		console.log(
-			"Pagefind is not available in development mode. Using mock data.",
-		);
 		initializeSearch();
 	} else {
 		if (window.pagefind && typeof window.pagefind.search === "function") {
@@ -192,13 +232,6 @@ onMount(() => {
 			document.addEventListener("pagefindready", onPagefindReady);
 			document.addEventListener("pagefindloaderror", onPagefindLoadError);
 		}
-
-		setTimeout(() => {
-			if (!initialized) {
-				console.log("Fallback: Initializing search after timeout.");
-				initializeSearch();
-			}
-		}, 2000);
 	}
 
 	window.addEventListener("keydown", handleKeydown);
@@ -232,7 +265,7 @@ $: if (initialized) {
 <!-- Search Trigger Button (Mobile) -->
 <button on:click={openSearch} aria-label="Search Panel"
         class="btn-plain scale-animation lg:!hidden rounded-[var(--radius-large)] w-10 h-10 active:scale-90">
-    <Icon icon="material-symbols:search" class="text-[1.25rem]"></Icon>
+    <ClientIcon name="search" className="text-[1.25rem] w-5 h-5" />
 </button>
 
 <!-- Telescope Modal -->
@@ -246,7 +279,7 @@ $: if (initialized) {
         
         <!-- Prompt Bar -->
         <div class="flex items-center px-4 py-3 border-b border-[var(--primary)]/20 bg-[var(--card-bg)]">
-            <Icon icon="material-symbols:search" class="text-[var(--primary)] text-xl mr-3" />
+            <ClientIcon name="search" className="text-[var(--primary)] text-xl mr-3 w-5 h-5" />
             <span class="text-[var(--primary)] mr-2 font-bold">Telescope</span>
             <span class="text-[var(--content-meta)] mr-2">></span>
             <input 
@@ -273,7 +306,7 @@ $: if (initialized) {
                             <span class="text-[var(--primary)] font-mono text-sm group-hover:text-[var(--link-hover)] transition-colors">
                                 {item.meta.title}
                             </span>
-                            <Icon icon="material-symbols:subdirectory-arrow-left" class="text-[var(--content-meta)] opacity-0 group-hover:opacity-100 transition-opacity text-xs" />
+                            <ClientIcon name="subdirectory-arrow-left" className="text-[var(--content-meta)] opacity-0 group-hover:opacity-100 transition-opacity text-xs w-3 h-3" />
                         </div>
                         <div class="text-[var(--content-meta)] text-xs mt-1 font-mono truncate pl-4 border-l-2 border-[var(--content-meta)]/30 group-hover:border-[var(--primary)]/50 transition-colors">
                             {@html item.excerpt}
@@ -282,7 +315,7 @@ $: if (initialized) {
                 {/each}
             {:else if keyword}
                 <div class="flex flex-col items-center justify-center py-12 text-[var(--content-meta)]">
-                    <Icon icon="material-symbols:search-off" class="text-4xl mb-2 opacity-50" />
+                    <ClientIcon name="search-off" className="text-4xl mb-2 opacity-50 w-10 h-10" />
                     <span class="font-mono text-sm">No results found for "{keyword}"</span>
                 </div>
             {:else}

@@ -13,70 +13,244 @@ const config = {
 ---
 
 <div id="tcomment"></div>
-<script is:inline src="/scroll-protection.js"></script>
-<script is:inline src="/assets/js/twikoo.all.min.js"></script>
 <script is:inline define:vars={{ config }}>
-  // 获取当前页面路径
+  const RUNTIME_KEY = "__mizukiTwikooRuntime";
+
   function getCurrentPath() {
     const pathname = window.location.pathname;
-    return pathname.endsWith('/') && pathname.length > 1 ? pathname.slice(0, -1) : pathname;
+    return pathname.endsWith("/") && pathname.length > 1
+      ? pathname.slice(0, -1)
+      : pathname;
   }
-  
-  // 动态创建配置对象
+
+  function getCommentElement() {
+    return document.getElementById("tcomment");
+  }
+
+  function getRuntime() {
+    if (!window[RUNTIME_KEY]) {
+      window[RUNTIME_KEY] = {
+        observer: null,
+        initToken: 0,
+        initializedPath: "",
+        scriptPromises: {},
+        hooksBound: false,
+        scheduleTimer: null,
+      };
+    }
+
+    return window[RUNTIME_KEY];
+  }
+
+  function disconnectObserver() {
+    const runtime = getRuntime();
+    if (runtime.observer) {
+      runtime.observer.disconnect();
+      runtime.observer = null;
+    }
+  }
+
+  function loadScriptOnce(src) {
+    const runtime = getRuntime();
+    if (runtime.scriptPromises[src]) {
+      return runtime.scriptPromises[src];
+    }
+
+    runtime.scriptPromises[src] = new Promise((resolve, reject) => {
+      let script = document.querySelector(`script[src="${src}"]`);
+
+      const handleLoad = () => {
+        script?.setAttribute("data-loaded", "true");
+        resolve();
+      };
+
+      const handleError = () => {
+        delete runtime.scriptPromises[src];
+        reject(new Error(`Failed to load script: ${src}`));
+      };
+
+      if (script?.getAttribute("data-loaded") === "true") {
+        resolve();
+        return;
+      }
+
+      if (!script) {
+        script = document.createElement("script");
+        script.src = src;
+        script.async = true;
+        document.head.appendChild(script);
+      }
+
+      script.addEventListener("load", handleLoad, { once: true });
+      script.addEventListener("error", handleError, { once: true });
+    });
+
+    return runtime.scriptPromises[src];
+  }
+
+  async function ensureTwikooScripts() {
+    if (typeof window.twikoo !== "undefined") {
+      return;
+    }
+
+    await Promise.all([
+      loadScriptOnce("/scroll-protection.js"),
+      loadScriptOnce("/assets/js/twikoo.all.min.js"),
+    ]);
+  }
+
   function createTwikooConfig() {
     return {
       ...config,
       path: getCurrentPath(),
-      el: '#tcomment'
+      el: "#tcomment",
     };
   }
-  
-  // 初始化 Twikoo
-  function initTwikoo() {
-    if (typeof twikoo !== 'undefined') {
-      const commentEl = document.getElementById('tcomment');
-      if (commentEl) {
-        commentEl.innerHTML = '';
-        
-        const dynamicConfig = createTwikooConfig();
-        console.log('[Twikoo] 初始化配置:', dynamicConfig);
-        
-        twikoo.init(dynamicConfig).then(() => {
-          console.log('[Twikoo] 初始化完成');
-        }).catch((error) => {
-          console.error('[Twikoo] 初始化失败:', error);
-        });
+
+  async function initTwikoo(force) {
+    const runtime = getRuntime();
+    const commentEl = getCommentElement();
+    if (!commentEl) {
+      return;
+    }
+
+    const currentPath = getCurrentPath();
+    const alreadyMounted =
+      runtime.initializedPath === currentPath &&
+      commentEl.dataset.twikooMounted === "true";
+
+    if (!force && alreadyMounted) {
+      return;
+    }
+
+    const token = ++runtime.initToken;
+    commentEl.dataset.twikooMounted = "pending";
+
+    try {
+      await ensureTwikooScripts();
+    } catch (error) {
+      console.error("[Twikoo] 脚本加载失败:", error);
+      if (token === runtime.initToken) {
+        commentEl.dataset.twikooMounted = "error";
       }
+      return;
+    }
+
+    if (token !== runtime.initToken || typeof window.twikoo === "undefined") {
+      return;
+    }
+
+    commentEl.innerHTML = "";
+
+    try {
+      await window.twikoo.init(createTwikooConfig());
+      if (token !== runtime.initToken) {
+        return;
+      }
+
+      runtime.initializedPath = currentPath;
+      commentEl.dataset.twikooMounted = "true";
+    } catch (error) {
+      if (token === runtime.initToken) {
+        runtime.initializedPath = "";
+        commentEl.dataset.twikooMounted = "error";
+      }
+      console.error("[Twikoo] 初始化失败:", error);
+    }
+  }
+
+  function observeTwikooVisibility(force) {
+    const commentEl = getCommentElement();
+    if (!commentEl) {
+      return;
+    }
+
+    disconnectObserver();
+
+    if (!("IntersectionObserver" in window)) {
+      void initTwikoo(force);
+      return;
+    }
+
+    const runtime = getRuntime();
+    runtime.observer = new IntersectionObserver(
+      (entries) => {
+        const isVisible = entries.some((entry) => entry.isIntersecting);
+        if (!isVisible) {
+          return;
+        }
+
+        disconnectObserver();
+        void initTwikoo(force);
+      },
+      {
+        rootMargin: "300px 0px",
+      },
+    );
+
+    runtime.observer.observe(commentEl);
+  }
+
+  function scheduleTwikooInit(force, delay) {
+    const runtime = getRuntime();
+    if (runtime.scheduleTimer) {
+      clearTimeout(runtime.scheduleTimer);
+    }
+
+    runtime.scheduleTimer = setTimeout(() => {
+      const currentPath = getCurrentPath();
+      if (runtime.initializedPath !== currentPath) {
+        runtime.initializedPath = "";
+      }
+
+      observeTwikooVisibility(force);
+    }, delay);
+  }
+
+  function bindSwupHooksOnce() {
+    const runtime = getRuntime();
+    if (runtime.hooksBound) {
+      return;
+    }
+
+    runtime.hooksBound = true;
+
+    const bindHooks = () => {
+      if (!window.swup?.hooks) {
+        return;
+      }
+
+      window.swup.hooks.on("content:replace", () => {
+        scheduleTwikooInit(true, 250);
+      });
+
+      window.swup.hooks.on("page:view", () => {
+        scheduleTwikooInit(false, 350);
+      });
+    };
+
+    document.addEventListener("mizuki:page:loaded", () => {
+      scheduleTwikooInit(true, 0);
+    });
+
+    if (window.swup?.hooks) {
+      bindHooks();
     } else {
-      // 如果 Twikoo 未加载，稍后重试
-      setTimeout(initTwikoo, 500);
+      document.addEventListener("swup:enable", bindHooks, { once: true });
     }
   }
-  
-  // 页面加载时初始化
-  document.addEventListener('DOMContentLoaded', initTwikoo);
-  
-  // Swup 页面切换后重新初始化
-  if (window.swup && window.swup.hooks) {
-    window.swup.hooks.on('content:replace', function() {
-      setTimeout(initTwikoo, 200);
-    });
+
+  bindSwupHooksOnce();
+
+  if (document.readyState === "loading") {
+    document.addEventListener(
+      "DOMContentLoaded",
+      () => {
+        scheduleTwikooInit(false, 0);
+      },
+      { once: true },
+    );
   } else {
-    document.addEventListener('swup:enable', function() {
-      if (window.swup && window.swup.hooks) {
-        window.swup.hooks.on('content:replace', function() {
-          setTimeout(initTwikoo, 200);
-        });
-      }
-    });
+    scheduleTwikooInit(false, 0);
   }
-  
-  // 自定义事件监听
-  document.addEventListener('mizuki:page:loaded', function() {
-    const commentEl = document.getElementById('tcomment');
-    if (commentEl) {
-      console.log('[Twikoo] 通过自定义事件重新初始化');
-      initTwikoo();
-    }
-  });
 </script>

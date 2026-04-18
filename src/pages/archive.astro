@@ -25,6 +25,5 @@ groupedPostsArray.sort((a, b) => b.year - a.year);
 ---
 
 <MainGridLayout title={i18n(I18nKey.archive)}>
-    <ArchivePanel sortedPosts={sortedPostsList} initialGroups={groupedPostsArray} client:load></ArchivePanel>
+    <ArchivePanel sortedPosts={sortedPostsList} initialGroups={groupedPostsArray} client:visible></ArchivePanel>
 </MainGridLayout>
-

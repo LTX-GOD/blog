@@ -24,6 +24,7 @@ import { rehypeMermaid } from "./src/plugins/rehype-mermaid.mjs";
 import { parseDirectiveNode } from "./src/plugins/remark-directive-rehype.js";
 import { remarkExcerpt } from "./src/plugins/remark-excerpt.js";
 import { remarkMermaid } from "./src/plugins/remark-mermaid.js";
+import { remarkNormalizeCodeLang } from "./src/plugins/remark-normalize-code-lang.js";
 import { remarkReadingTime } from "./src/plugins/remark-reading-time.mjs";
 // https://astro.build/config
 export default defineConfig({
@@ -131,6 +132,7 @@ export default defineConfig({
 			remarkMath,
 			remarkReadingTime,
 			remarkExcerpt,
+			remarkNormalizeCodeLang,
 			remarkGithubAdmonitionsToDirectives,
 			remarkDirective,
 			remarkSectionize,
@@ -196,4 +198,3 @@ export default defineConfig({
 		},
 	},
 });
-

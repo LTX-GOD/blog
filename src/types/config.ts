@@ -89,6 +89,10 @@ export type SiteConfig = {
 	generateOgImages: boolean;
 	favicon: Favicon[];
 	showLastModified: boolean; // 控制“上次编辑”卡片显示的开关
+	performance?: {
+		enableBootLoader?: boolean;
+		enableThirdPartyAnalytics?: boolean;
+	};
 };
 
 export type Favicon = {
@@ -265,5 +269,4 @@ export type FullscreenWallpaperConfig = {
 	opacity?: number; // 壁纸透明度，0-1之间
 	blur?: number; // 背景模糊程度，单位px
 };
-
 

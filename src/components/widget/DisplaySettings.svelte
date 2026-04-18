@@ -1,19 +1,27 @@
 <script lang="ts">
-import I18nKey from "@i18n/i18nKey";
-import { i18n } from "@i18n/translation";
-import Icon from "@iconify/svelte";
+import ClientIcon from "@components/ui/ClientIcon.svelte";
 import { getDefaultHue, getHue, setHue } from "@utils/setting-utils";
+import { onMount } from "svelte";
 
-let hue = getHue();
-const defaultHue = getDefaultHue();
+export let themeColorLabel = "主题色";
+
+let hue = 0;
+let defaultHue = 0;
 
 function resetHue() {
 	hue = getDefaultHue();
 }
 
 $: if (hue || hue === 0) {
-	setHue(hue);
+	if (typeof window !== "undefined" && defaultHue !== 0) {
+		setHue(hue);
+	}
 }
+
+onMount(() => {
+	defaultHue = getDefaultHue();
+	hue = getHue();
+});
 </script>
 
 <div id="display-setting" class="float-panel float-panel-closed absolute transition-all w-80 right-4 px-4 py-4">
@@ -22,11 +30,11 @@ $: if (hue || hue === 0) {
             before:w-1 before:h-4 before:rounded-md before:bg-[var(--primary)]
             before:absolute before:-left-3 before:top-[0.33rem]"
         >
-            {i18n(I18nKey.themeColor)}
+            {themeColorLabel}
             <button aria-label="Reset to Default" class="btn-regular w-7 h-7 rounded-md  active:scale-90"
                     class:opacity-0={hue === defaultHue} class:pointer-events-none={hue === defaultHue} on:click={resetHue}>
                 <div class="text-[var(--btn-content)]">
-                    <Icon icon="fa6-solid:arrow-rotate-left" class="text-[0.875rem]"></Icon>
+                    <ClientIcon name="arrow-rotate-left" className="text-[0.875rem] w-3.5 h-3.5" />
                 </div>
             </button>
         </div>
@@ -38,7 +46,7 @@ $: if (hue || hue === 0) {
         </div>
     </div>
     <div class="w-full h-6 px-1 bg-[oklch(0.80_0.10_0)] dark:bg-[oklch(0.70_0.10_0)] rounded select-none">
-        <input aria-label={i18n(I18nKey.themeColor)} type="range" min="0" max="360" bind:value={hue}
+        <input aria-label={themeColorLabel} type="range" min="0" max="360" bind:value={hue}
                class="slider" id="colorSlider" step="5" style="width: 100%">
     </div>
 </div>

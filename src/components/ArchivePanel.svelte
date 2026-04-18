@@ -39,6 +39,10 @@ function formatTag(tagList: string[]) {
 
 onMount(async () => {
     const params = new URLSearchParams(window.location.search);
+    if (![...params.keys()].length) {
+        return;
+    }
+
     tags = params.has("tag") ? params.getAll("tag") : [];
     categories = params.has("category") ? params.getAll("category") : [];
     const uncategorized = params.get("uncategorized");

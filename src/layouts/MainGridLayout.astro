@@ -6,7 +6,6 @@ import SideBar from "@components/widget/SideBar.astro";
 import type { MarkdownHeading } from "astro";
 import { Icon } from "astro-icon/components";
 import FullscreenWallpaper from "@components/misc/FullscreenWallpaper.astro";
-import IconifyLoader from "@components/misc/IconifyLoader.astro";
 import ImageWrapper from "@components/misc/ImageWrapper.astro";
 import TypewriterText from "@components/TypewriterText.astro";
 import TOC from "@components/widget/TOC.astro";
@@ -185,9 +184,6 @@ const stickyComponents = widgetManager.getComponentsByPosition("sticky");
 	<FullscreenWallpaper config={fullscreenWallpaperConfig} />
 )}
 
-<!-- 全局图标加载器 -->
-<IconifyLoader />
-
 <!-- 为全屏壁纸模式添加body类 -->
 {shouldEnableTransparency && (
 	<script>
@@ -259,6 +255,9 @@ const stickyComponents = widgetManager.getComponentsByPosition("sticky");
                     class:list={["block lg:hidden object-cover h-full w-full transition duration-700 opacity-100"]}
                     src={(Array.isArray(bannerImages.mobile) ? bannerImages.mobile[0] : (typeof bannerImages.mobile === 'string' ? bannerImages.mobile : '')) || (Array.isArray(bannerImages.desktop) ? bannerImages.desktop[0] : (typeof bannerImages.desktop === 'string' ? bannerImages.desktop : '')) || ''} 
                     position={siteConfig.banner.position}
+                    loading="eager"
+                    fetchpriority="high"
+                    decoding="sync"
                 />
                 <!-- Desktop: use desktop-specific image -->
                 <ImageWrapper 
@@ -267,6 +266,9 @@ const stickyComponents = widgetManager.getComponentsByPosition("sticky");
                     class:list={["hidden lg:block object-cover h-full transition duration-700 opacity-100"]}
                     src={(Array.isArray(bannerImages.desktop) ? bannerImages.desktop[0] : (typeof bannerImages.desktop === 'string' ? bannerImages.desktop : '')) || (Array.isArray(bannerImages.mobile) ? bannerImages.mobile[0] : (typeof bannerImages.mobile === 'string' ? bannerImages.mobile : '')) || ''} 
                     position={siteConfig.banner.position}
+                    loading="eager"
+                    fetchpriority="high"
+                    decoding="sync"
                 />
             </div>
     )}

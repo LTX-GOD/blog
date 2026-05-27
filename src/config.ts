@@ -31,7 +31,7 @@ export const siteConfig: SiteConfig = {
 
 
 	bangumi: {
-		userId: "your-bangumi-id", // 在此处设置你的Bangumi用户ID，可以设置为 "sai" 测试
+		userId: "", // 不使用 Bangumi API 时保持为空
 	},
 
 	anime: {
@@ -151,8 +151,8 @@ export const navBarConfig: NavBarConfig = {
 		LinkPreset.Archive,
 		// 支持自定义导航栏链接,并且支持多级菜单,3.1版本新加
 		{
-			name: "Links",
-			url: "/links/",
+			name: "Profiles",
+			url: "/friends/",
 			icon: "material-symbols:link",
 			children: [
 				{
@@ -170,8 +170,8 @@ export const navBarConfig: NavBarConfig = {
 			],
 		},
 		{
-			name: "About",
-			url: "/content/",
+			name: "Content",
+			url: "/about/",
 			icon: "material-symbols:info",
 			children: [LinkPreset.About, LinkPreset.Friends],
 		},
@@ -185,7 +185,7 @@ export const profileConfig: ProfileConfig = {
 	bio: "Time can create anything",
 	links: [
 		{
-			name: "Bilibli",
+			name: "Bilibili",
 			icon: "fa6-brands:bilibili",
 			url: "https://space.bilibili.com/439985636?spm_id_from=333.1007.0.0",
 		},
@@ -213,17 +213,17 @@ export const commentConfig: CommentConfig = {
 	enable: true, // 启用评论功能。当设置为 false 时，评论组件将不会显示在文章区域。
 	twikoo: {
 		envId: "https://twikoo.zhuangsanmeng.xyz/",
-		lang: "zh_CN", // 设置 Twikoo 评论系统语言为英文
+		lang: "zh_CN", // 评论系统使用简体中文
 	},
 };
 
 export const announcementConfig: AnnouncementConfig = {
-	title: "Announcement", // 公告标题
-	content: "A ctfer? maybe .", // 公告内容
+	title: "公告", // 公告标题
+	content: "记录 CTF、渗透、开发和日常折腾。", // 公告内容
 	closable: false, // 允许用户关闭公告
 	link: {
 		enable: true, // 启用链接
-		text: "Learn More", // 链接文本
+		text: "关于我", // 链接文本
 		url: "/about/", // 链接 URL
 		external: false, // 内部链接
 	},

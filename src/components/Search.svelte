@@ -36,7 +36,7 @@ const fakeResult: SearchResult[] = [
 		meta: {
 			title: "If You Want to Test the Search",
 		},
-		excerpt: "Try running <mark>npm build && npm preview</mark> instead.",
+		excerpt: "Try running <mark>pnpm build && pnpm preview</mark> instead.",
 	},
 ];
 

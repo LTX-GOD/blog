@@ -135,15 +135,15 @@ const hasChildren = processedLink.children && processedLink.children.length > 0;
 				const ke = e as KeyboardEvent;
 				if (ke.key === 'Enter' || ke.key === ' ') {
 					e.preventDefault();
-					toggleDropdown(dropdown, trigger, menu);
+					toggleDropdown(trigger, menu);
 				} else if (ke.key === 'ArrowDown') {
 					e.preventDefault();
-					openDropdown(dropdown, trigger, menu);
+					openDropdown(trigger, menu);
 					if (items.length > 0) {
 						items[0].focus();
 					}
 				} else if (ke.key === 'Escape') {
-					closeDropdown(dropdown, trigger, menu);
+					closeDropdown(trigger, menu);
 				}
 			});
 			
@@ -160,7 +160,7 @@ const hasChildren = processedLink.children && processedLink.children.length > 0;
 						const prevIndex = (index - 1 + items.length) % items.length;
 						items[prevIndex].focus();
 					} else if (ke.key === 'Escape') {
-						closeDropdown(dropdown, trigger, menu);
+						closeDropdown(trigger, menu);
 						trigger.focus();
 					}
 				});
@@ -174,29 +174,29 @@ const hasChildren = processedLink.children && processedLink.children.length > 0;
 					const trigger = dropdown.querySelector<HTMLElement>('[data-dropdown-trigger]');
 					const menu = dropdown.querySelector<HTMLElement>('[data-dropdown-menu]');
 					if (trigger && menu) {
-						closeDropdown(dropdown, trigger, menu);
+						closeDropdown(trigger, menu);
 					}
 				}
 			});
 		});
 	});
 	
-	function toggleDropdown(dropdown: HTMLElement, trigger: HTMLElement, menu: HTMLElement) {
+	function toggleDropdown(trigger: HTMLElement, menu: HTMLElement) {
 		const isOpen = trigger.getAttribute('aria-expanded') === 'true';
 		if (isOpen) {
-			closeDropdown(dropdown, trigger, menu);
+			closeDropdown(trigger, menu);
 		} else {
-			openDropdown(dropdown, trigger, menu);
+			openDropdown(trigger, menu);
 		}
 	}
 	
-	function openDropdown(dropdown: HTMLElement, trigger: HTMLElement, menu: HTMLElement) {
+	function openDropdown(trigger: HTMLElement, menu: HTMLElement) {
 		trigger.setAttribute('aria-expanded', 'true');
 		menu.classList.remove('opacity-0', 'invisible', 'pointer-events-none', 'translate-y-[-8px]');
 		menu.classList.add('opacity-100', 'visible', 'pointer-events-auto', 'translate-y-0');
 	}
 	
-	function closeDropdown(dropdown: HTMLElement, trigger: HTMLElement, menu: HTMLElement) {
+	function closeDropdown(trigger: HTMLElement, menu: HTMLElement) {
 		trigger.setAttribute('aria-expanded', 'false');
 		menu.classList.add('opacity-0', 'invisible', 'pointer-events-none', 'translate-y-[-8px]');
 		menu.classList.remove('opacity-100', 'visible', 'pointer-events-auto', 'translate-y-0');

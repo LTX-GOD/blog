@@ -203,3 +203,5 @@ if (window.swup) {
 		codeBlockCollapser.scheduleSetup(container);
 	});
 }
+
+export {};

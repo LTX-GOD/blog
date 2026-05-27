@@ -7,10 +7,8 @@ interface Props {
 	post: CollectionEntry<"posts">;
 }
 
-const { id, data, slug } = Astro.props.post;
-
+const { slug } = Astro.props.post;
 const path = `/posts/${slug}`;
-const url = `${Astro.site?.href}${path}`;
 
 let commentService = "";
 if (commentConfig?.enable && commentConfig?.twikoo) {

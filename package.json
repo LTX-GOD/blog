@@ -10,9 +10,9 @@
     "preview": "astro preview",
     "astro": "astro",
     "type-check": "tsc --noEmit --isolatedDeclarations",
-    "new-post": "node scripts/new-post.js",
-    "format": "biome format --write ./src",
-    "lint": "biome check --write ./src",
+    "new-post": "pnpm exec node scripts/new-post.js",
+    "format": "biome format --write .",
+    "lint": "biome check --write .",
     "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
@@ -87,7 +87,7 @@
     "postcss-import": "^16.1.1",
     "postcss-nesting": "^13.0.2"
   },
-  "packageManager": "pnpm@9.14.4",
+  "packageManager": "pnpm@11.0.3",
   "overrides": {
     "glob": "^9.0.0",
     "rollup-plugin-terser": "npm:@rollup/plugin-terser"

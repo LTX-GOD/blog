@@ -28,7 +28,6 @@ export class AnimationManager {
 	init(): void {
 		this.setupSwupIntegration();
 		this.setupScrollAnimations();
-		console.log("🎨 Animation Manager initialized");
 	}
 
 	/**
@@ -242,16 +241,5 @@ export class AnimationManager {
 	}
 }
 
-// 导出单例实例
+// 导出单例实例，调用方需显式调用 animationManager.init() 来激活
 export const animationManager = AnimationManager.getInstance();
-
-// 自动初始化
-if (typeof window !== "undefined") {
-	if (document.readyState === "loading") {
-		document.addEventListener("DOMContentLoaded", () => {
-			animationManager.init();
-		});
-	} else {
-		animationManager.init();
-	}
-}

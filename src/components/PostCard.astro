@@ -141,12 +141,14 @@ const { remarkPluginFrontmatter } = await entry.render();
 </div>
 
 <script>
-    // 3D Tilt Effect - Vanilla Implementation with High Performance
-    // 简化版核心逻辑，移除复杂计算，依赖 CSS 3D
+    // 3D Tilt Effect - 每张卡片只注册一次监听器，防止 SWUP 页面切换时重复累积
+    const TILT_ATTR = 'data-tilt-init';
+
     const initTilt = () => {
-        const containers = document.querySelectorAll('.card-container');
-        
-        containers.forEach(container => {
+        document.querySelectorAll('.card-container').forEach(container => {
+            if ((container as HTMLElement).dataset.tiltInit) return; // 已初始化，跳过
+            (container as HTMLElement).dataset.tiltInit = '1';
+
             const card = container.querySelector('.card-tilt') as HTMLElement;
             if (!card) return;
 
@@ -155,52 +157,40 @@ const { remarkPluginFrontmatter } = await entry.render();
             let centerY: number;
             let ticking = false;
 
-            // 预计算，减少 move 时的开销
             const updateBounds = () => {
                 bounds = container.getBoundingClientRect();
                 centerX = bounds.left + bounds.width / 2;
                 centerY = bounds.top + bounds.height / 2;
             };
 
+            const onResize = () => updateBounds();
+            window.addEventListener('resize', onResize);
+
             const rotateToMouse = (e: MouseEvent) => {
                 if (!ticking) {
                     window.requestAnimationFrame(() => {
-                        updateTransform(e);
+                        const mouseX = e.clientX;
+                        const mouseY = e.clientY;
+                        const rotateX = ((mouseY - centerY) / (bounds.height / 2)) * -10;
+                        const rotateY = ((mouseX - centerX) / (bounds.width / 2)) * 10;
+                        card.style.setProperty('--mouse-x', `${mouseX - bounds.left}px`);
+                        card.style.setProperty('--mouse-y', `${mouseY - bounds.top}px`);
+                        card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
                         ticking = false;
                     });
                     ticking = true;
                 }
             };
 
-            const updateTransform = (e: MouseEvent) => {
-                const mouseX = e.clientX;
-                const mouseY = e.clientY;
-                const leftX = mouseX - bounds.left;
-                const topY = mouseY - bounds.top;
-
-                // 旋转角度
-                const rotateX = ((mouseY - centerY) / (bounds.height / 2)) * -10; // 倒置 X 轴
-                const rotateY = ((mouseX - centerX) / (bounds.width / 2)) * 10;
-                
-                // 动态光泽
-                card.style.setProperty('--mouse-x', `${leftX}px`);
-                card.style.setProperty('--mouse-y', `${topY}px`);
-
-                // 应用变换
-                card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
-            };
-
             const stopRotate = () => {
                 card.style.transition = 'transform 0.5s ease-out';
                 card.style.transform = 'rotateX(0) rotateY(0) scale3d(1, 1, 1)';
-                setTimeout(() => {
-                    card.style.transition = '';
-                }, 500);
+                setTimeout(() => { card.style.transition = ''; }, 500);
             };
 
             container.addEventListener('mouseenter', () => {
                 updateBounds();
-                card.style.transition = 'none'; // 进入时移除过渡，实现瞬时响应
+                card.style.transition = 'none';
                 document.addEventListener('mousemove', rotateToMouse);
             });
 
@@ -208,22 +198,26 @@ const { remarkPluginFrontmatter } = await entry.render();
                 document.removeEventListener('mousemove', rotateToMouse);
                 stopRotate();
             });
-            
-            // 窗口调整时更新
-            window.addEventListener('resize', updateBounds);
         });
     };
 
-    // 初始化
     initTilt();
-    
-    // 支持 Astro View Transitions
-    document.addEventListener('astro:page-load', initTilt);
-    
-    // 支持 Swup
-    if (window.swup) {
-        window.swup.hooks.on('page:view', initTilt);
-        window.swup.hooks.on('content:replace', initTilt);
+
+    // 单例注册 SWUP hooks，防止每次页面切换时脚本重新执行累积
+    const TILT_SWUP_KEY = '__tiltSwupInit';
+    if (!(window as any)[TILT_SWUP_KEY]) {
+        (window as any)[TILT_SWUP_KEY] = true;
+        const registerSwup = () => {
+            const swup = (window as any).swup;
+            if (swup?.hooks) {
+                swup.hooks.on('content:replace', initTilt);
+            }
+        };
+        if ((window as any).swup?.hooks) {
+            registerSwup();
+        } else {
+            document.addEventListener('swup:enable', registerSwup, { once: true });
+        }
     }
 </script>
 

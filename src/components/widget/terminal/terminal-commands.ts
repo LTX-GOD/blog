@@ -46,12 +46,14 @@ projects/`,
 		clear: () => "",
 		uname: () => "Linux zsm-blog 5.15.0-generic #1 SMP x86_64 GNU/Linux",
 		rm: () => {
-			window.close();
-			document.body.innerHTML = "";
-			document.body.style.backgroundColor = "black";
-			setTimeout(() => {
-				window.location.href = "about:blank";
-			}, 500);
+			// 用全屏遮罩模拟"系统关机"，不破坏 SWUP DOM 状态
+			const overlay = document.createElement("div");
+			overlay.style.cssText =
+				"position:fixed;inset:0;background:#000;z-index:99999;transition:opacity 0.5s";
+			overlay.style.opacity = "0";
+			document.body.appendChild(overlay);
+			requestAnimationFrame(() => { overlay.style.opacity = "1"; });
+			setTimeout(() => { window.location.href = "about:blank"; }, 600);
 			return "System halting...";
 		},
 	};

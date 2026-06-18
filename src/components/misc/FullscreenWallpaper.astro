@@ -192,35 +192,35 @@ const positionClass = getPositionClass(position);
 			const desktopItems = wallpaperContainer.querySelectorAll('.hidden.lg\\:block [data-carousel-item]');
 			const mobileItems = wallpaperContainer.querySelectorAll('.block.lg\\:hidden [data-carousel-item]');
 
+			const _intervals: ReturnType<typeof setInterval>[] = [];
+
 			function startCarousel(items) {
 				if (items.length <= 1) return;
 
 				let currentIndex = 0;
-				
-				// 初始化：显示第一张，隐藏其他
 				items.forEach((item, index) => {
 					item.style.opacity = index === 0 ? '1' : '0';
 				});
 
-				// 开始轮播
-				setInterval(() => {
-					// 隐藏当前图片
+				const id = setInterval(() => {
 					items[currentIndex].style.opacity = '0';
-					
-					// 切换到下一张
 					currentIndex = (currentIndex + 1) % items.length;
-					
-					// 显示下一张图片
 					items[currentIndex].style.opacity = '1';
 				}, carouselInterval * 1000);
+				_intervals.push(id);
 			}
 
-			// 分别为桌面端和移动端启动轮播
-			if (desktopItems.length > 0) {
-				startCarousel(desktopItems);
-			}
-			if (mobileItems.length > 0) {
-				startCarousel(mobileItems);
+			if (desktopItems.length > 0) startCarousel(desktopItems);
+			if (mobileItems.length > 0) startCarousel(mobileItems);
+
+			// SWUP 页面切换时清理定时器，防止泄漏
+			const clearAll = () => { _intervals.forEach(clearInterval); _intervals.length = 0; };
+			if ((window as any).swup?.hooks) {
+				(window as any).swup.hooks.on('visit:start', clearAll, { once: true });
+			} else {
+				document.addEventListener('swup:enable', () => {
+					(window as any).swup?.hooks.on('visit:start', clearAll, { once: true });
+				}, { once: true });
 			}
 		}
 

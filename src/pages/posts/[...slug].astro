@@ -28,9 +28,7 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props;
-const { Content, headings } = await entry.render();
-
-const { remarkPluginFrontmatter } = await entry.render();
+const { Content, headings, remarkPluginFrontmatter } = await entry.render();
 
 // 处理加密逻辑
 let encryptedContent = "";
@@ -294,7 +292,7 @@ const jsonLd = {
                                 runtimeString += `${secs} ${secondKey}`;
                             }
 
-                            modifiedTimeElement.innerHTML = runtimeString;
+                            modifiedTimeElement.textContent = runtimeString;
                         }
 
                         // Clear existing interval to prevent duplicates and memory leaks

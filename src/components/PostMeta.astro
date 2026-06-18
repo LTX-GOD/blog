@@ -5,13 +5,11 @@ import { i18n } from "../i18n/translation";
 import { formatDateToYYYYMMDD } from "../utils/date-utils";
 import { getCategoryUrl, getTagUrl } from "../utils/url-utils";
 
-import { umamiConfig } from '../config';
+import { umamiConfig, umamiWebsiteId } from '../config';
 
-// 解析 umami
-const umamiEnabled = umamiConfig.enabled || false;
-const umamiWebsiteId = umamiConfig.scripts.match(/data-website-id="([^"]+)"/)?.[1] || "";
-const umamiApiKey = umamiConfig.apiKey || "";
-const umamiBaseUrl = umamiConfig.baseUrl || "";
+const umamiStatsEnabled = umamiConfig.statsEnabled;
+const umamiApiKey = umamiConfig.apiKey;
+const umamiBaseUrl = umamiConfig.baseUrl;
 
 export interface Props {
   published: Date;
@@ -94,8 +92,8 @@ const {
         </div>
     </div>
     
-    <!-- 访问量（首页不显示，且umami.enabled为true时显示） -->
-    {!isHome && umamiEnabled && slug && (
+    <!-- 访问量（首页不显示，且umami.statsEnabled为true时显示） -->
+    {!isHome && umamiStatsEnabled && slug && (
         <div class="flex items-center">
             <div class="meta-icon">
                 <Icon name="material-symbols:visibility-outline-rounded" class="text-xl"></Icon>
@@ -105,8 +103,8 @@ const {
     )}
 </div>
 
-<!-- 只有在非首页且启用umami且有slug时才加载脚本 -->
-{!isHome && umamiEnabled && slug && (
+<!-- 只有在非首页且启用统计且有slug时才加载脚本 -->
+{!isHome && umamiStatsEnabled && slug && (
     <script define:vars={{ slug, umamiBaseUrl, umamiApiKey, umamiWebsiteId, umamiConfig }}>
         // 客户端统计文案生成函数
         function generateStatsText(pageViews, visitors) {
@@ -115,21 +113,21 @@ const {
         
         // 获取访问量统计
         async function fetchPageViews() {
-            if (!umamiConfig.enabled) {
+            if (!umamiConfig.statsEnabled) {
                 return;
             }
-            
+
             try {
                 // 构造文章页面的URL路径
                 const pageUrl = `/posts/${slug}/`;
-                
+
                 // 调用全局工具获取特定页面的 Umami 统计数据
                 const stats = await getUmamiPageStats(umamiBaseUrl, umamiApiKey, umamiWebsiteId, pageUrl);
-                
+
                 // 从返回的数据中提取页面浏览量和访客数
                 const pageViews = stats.pageviews || 0;
                 const visitors = stats.visitors || 0;
-                
+
                 const displayElement = document.getElementById('page-views-display');
                 if (displayElement) {
                     displayElement.textContent = generateStatsText(pageViews, visitors);

@@ -4,13 +4,11 @@ import { profileConfig } from "../../config";
 import { url } from "../../utils/url-utils";
 import ImageWrapper from "../misc/ImageWrapper.astro";
 
-import { umamiConfig } from '../../config';
+import { umamiConfig, umamiWebsiteId } from '../../config';
 
-// 解析 umami
-const umamiEnabled = umamiConfig.enabled || false;
-const umamiWebsiteId = umamiConfig.scripts.match(/data-website-id="([^"]+)"/)?.[1] || "";
-const umamiApiKey = umamiConfig.apiKey || "";
-const umamiBaseUrl = umamiConfig.baseUrl || "";
+const umamiStatsEnabled = umamiConfig.statsEnabled;
+const umamiApiKey = umamiConfig.apiKey;
+const umamiBaseUrl = umamiConfig.baseUrl;
 ---
 
 <div class="card-base p-3">
@@ -41,7 +39,7 @@ const umamiBaseUrl = umamiConfig.baseUrl || "";
                 {profileConfig.links[0].name}
             </a>}
         </div>
-        {umamiEnabled && (
+        {umamiStatsEnabled && (
             <div class="text-sm text-gray-500 mt-2 text-center">
                 <Icon name="fa6-solid:eye" class="inline-block mr-1 text-gray-400 text-sm align-middle" />
                 <span id="site-stats-display">统计加载中...</span>
@@ -50,7 +48,7 @@ const umamiBaseUrl = umamiConfig.baseUrl || "";
     </div>
 </div>
 
-{umamiEnabled && (
+{umamiStatsEnabled && (
     <script define:vars={{ umamiBaseUrl, umamiApiKey, umamiWebsiteId, umamiConfig }}>
         // 客户端统计文案生成函数
         function generateStatsText(pageViews, visits) {
@@ -59,7 +57,7 @@ const umamiBaseUrl = umamiConfig.baseUrl || "";
         
         // 获取访问量统计
         async function fetchSiteStats(isRetry = false) {
-            if (!umamiConfig.enabled) {
+            if (!umamiConfig.statsEnabled) {
                 return;
             }
             

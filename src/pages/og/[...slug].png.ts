@@ -19,6 +19,34 @@ interface FontOptions {
 }
 export const prerender = true;
 
+// 模块级缓存：字体和静态文件只加载一次，跨所有 OG 图片复用
+let _fontCache: Promise<{ regular: Buffer | null; bold: Buffer | null }> | null = null;
+let _avatarBase64: string | null = null;
+let _iconBase64: string | null = null;
+
+function getCachedFonts() {
+	if (!_fontCache) _fontCache = fetchNotoSansSCFonts();
+	return _fontCache;
+}
+
+function getCachedAvatar(): string {
+	if (!_avatarBase64) {
+		const buf = fs.readFileSync(`./src/${profileConfig.avatar}`);
+		_avatarBase64 = `data:image/png;base64,${buf.toString("base64")}`;
+	}
+	return _avatarBase64;
+}
+
+function getCachedIcon(): string {
+	if (!_iconBase64) {
+		let iconPath = "./public/favicon/favicon-dark-192.png";
+		if (siteConfig.favicon.length > 0) iconPath = `./public${siteConfig.favicon[0].src}`;
+		const buf = fs.readFileSync(iconPath);
+		_iconBase64 = `data:image/png;base64,${buf.toString("base64")}`;
+	}
+	return _iconBase64;
+}
+
 export const getStaticPaths: GetStaticPaths = async () => {
 	if (!siteConfig.generateOgImages) {
 		return [];
@@ -88,19 +116,9 @@ export async function GET({
 }: APIContext<{ post: CollectionEntry<"posts"> }>) {
 	const { post } = props;
 
-	// Try to fetch fonts from Google Fonts (woff2) at runtime.
-	const { regular: fontRegular, bold: fontBold } = await fetchNotoSansSCFonts();
-
-	// Avatar + icon: still read from disk (small assets)
-	const avatarBuffer = fs.readFileSync(`./src/${profileConfig.avatar}`);
-	const avatarBase64 = `data:image/png;base64,${avatarBuffer.toString("base64")}`;
-
-	let iconPath = "./public/favicon/favicon-dark-192.png";
-	if (siteConfig.favicon.length > 0) {
-		iconPath = `./public${siteConfig.favicon[0].src}`;
-	}
-	const iconBuffer = fs.readFileSync(iconPath);
-	const iconBase64 = `data:image/png;base64,${iconBuffer.toString("base64")}`;
+	const { regular: fontRegular, bold: fontBold } = await getCachedFonts();
+	const avatarBase64 = getCachedAvatar();
+	const iconBase64 = getCachedIcon();
 
 	const hue = siteConfig.themeColor.hue;
 	const primaryColor = `hsl(${hue}, 90%, 65%)`;

@@ -14,7 +14,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { normalizeCodeLanguage } from '../../utils/code-language';
 
-const CACHE_DIR = path.join(process.cwd(), 'node_modules', '.cache');
+const CACHE_DIR = path.join(process.cwd(), '.cache');
 const CACHE_FILE = path.join(CACHE_DIR, 'shiki-cache.json');
 
 // Ensure cache dir exists

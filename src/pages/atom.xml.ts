@@ -9,6 +9,15 @@ import { getSortedPosts } from "@/utils/content-utils";
 
 const markdownParser = new MarkdownIt();
 
+function escapeXml(str: string): string {
+	return str
+		.replace(/&/g, "&amp;")
+		.replace(/</g, "&lt;")
+		.replace(/>/g, "&gt;")
+		.replace(/"/g, "&quot;")
+		.replace(/'/g, "&apos;");
+}
+
 // get dynamic import of images as a map collection
 const imagesGlob = import.meta.glob<{ default: ImageMetadata }>(
 	"/src/content/**/*.{jpeg,jpg,png,gif,webp}", // include posts and assets
@@ -94,7 +103,7 @@ export async function GET(context: APIContext) {
 					img.setAttribute("src", new URL(optimizedImg.src, context.site).href);
 				} else {
 					// Debug: log the failed import path
-					console.log(
+					console.warn(
 						`Failed to load image: ${importPath} for post: ${post.id}`,
 					);
 				}
@@ -112,21 +121,21 @@ export async function GET(context: APIContext) {
 
 		atomFeed += `
   <entry>
-    <title>${post.data.title}</title>
+    <title>${escapeXml(post.data.title)}</title>
     <link href="${postUrl}" rel="alternate" type="text/html"/>
     <id>${postUrl}</id>
     <published>${post.data.published.toISOString()}</published>
     <updated>${post.data.updated?.toISOString() || post.data.published.toISOString()}</updated>
-    <summary>${post.data.description || ""}</summary>
+    <summary>${escapeXml(post.data.description || "")}</summary>
     <content type="html"><![CDATA[${content}]]></content>
     <author>
-      <name>${profileConfig.name}</name>
+      <name>${escapeXml(profileConfig.name)}</name>
     </author>`;
     
     // 添加分类标签
     if (post.data.category) {
       atomFeed += `
-    <category term="${post.data.category}"></category>`;
+    <category term="${escapeXml(post.data.category)}"></category>`;
     }
     
     atomFeed += `

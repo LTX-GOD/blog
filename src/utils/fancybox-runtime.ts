@@ -111,7 +111,7 @@ export function setupFancyboxRuntime() {
 	if (window.swup) {
 		setup();
 	} else {
-		document.addEventListener("swup:enable", setup);
+		document.addEventListener("swup:enable", setup, { once: true });
 
 		if (document.readyState === "loading") {
 			document.addEventListener("DOMContentLoaded", () => {

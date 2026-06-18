@@ -57,7 +57,7 @@ export const siteConfig: SiteConfig = {
 		carousel: {
 			enable: true, // 为 true 时：为多张图片启用轮播。为 false 时：从数组中随机显示一张图片
 
-			interval: 1.5, // 轮播间隔时间（秒）
+			interval: 5, // 轮播间隔时间（秒）
 		},
 
 		// PicFlow API支持(智能图片API)
@@ -362,11 +362,14 @@ export const widgetConfigs = {
 	fullscreenWallpaper: fullscreenWallpaperConfig,
 } as const;
 
+export const umamiWebsiteId = "11f98cca-71d1-4781-90f9-fad46e20710c";
+const umamiApiKey = import.meta.env.PUBLIC_UMAMI_API_KEY?.trim() ?? "";
+const umamiBaseUrl = import.meta.env.PUBLIC_UMAMI_BASE_URL?.trim() ?? "https://api.umami.is";
+
 export const umamiConfig = {
-	enabled: true, // 是否显示Umami统计
-	apiKey: "api_ZwLKXjIV6u7ZJPhHhjUZOEIULKsyo84I", // 你的API密钥
-	baseUrl: "https://api.umami.is", // Umami Cloud API地址
-	scripts: `
-<script defer src="https://cloud.umami.is/script.js" data-website-id="11f98cca-71d1-4781-90f9-fad46e20710c"></script>
-  `.trim(), // 上面填你要插入的Script,不用再去Layout中插入
+	enabled: true, // 是否插入Umami追踪脚本
+	statsEnabled: umamiApiKey.length > 0, // 是否显示Umami统计
+	apiKey: umamiApiKey,
+	baseUrl: umamiBaseUrl, // Umami API地址
+	scripts: `<script defer src="https://cloud.umami.is/script.js" data-website-id="${umamiWebsiteId}"></script>`,
 } as const;

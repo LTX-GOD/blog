@@ -205,13 +205,12 @@ const stickyComponents = widgetManager.getComponentsByPosition("sticky");
         <!-- Carousel mode for multiple images -->
         <div id="banner-carousel" class="relative h-full w-full">
             <ul class="carousel-list h-full w-full">
-                {Math.max(
+                {(() => {
+                const itemCount = Math.max(
                     Array.isArray(bannerImages.desktop) ? bannerImages.desktop.length : 0,
                     Array.isArray(bannerImages.mobile) ? bannerImages.mobile.length : 0
-                ) && Array.from({ length: Math.max(
-                    Array.isArray(bannerImages.desktop) ? bannerImages.desktop.length : 0,
-                    Array.isArray(bannerImages.mobile) ? bannerImages.mobile.length : 0
-                ) }).map((_, index) => {
+                );
+                return itemCount > 0 && Array.from({ length: itemCount }).map((_, index) => {
                     // 确保至少有一个平台有对应索引的图片
                     const hasDesktopImage = Array.isArray(bannerImages.desktop) && bannerImages.desktop[index];
                     const hasMobileImage = Array.isArray(bannerImages.mobile) && bannerImages.mobile[index];
@@ -243,7 +242,8 @@ const stickyComponents = widgetManager.getComponentsByPosition("sticky");
                             )}
                         </li>
                     );
-                }).filter(Boolean)}
+                }).filter(Boolean);
+                })()}
             </ul>
         </div>
     ) : (

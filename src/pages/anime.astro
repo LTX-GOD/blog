@@ -13,6 +13,21 @@ const BANGUMI_API_BASE = "https://api.bgm.tv";
 // 获取番剧数据模式(不需要更改，请在主配置src/config.ts中修改)
 const ANIME_MODE = siteConfig.anime?.mode || "bangumi";
 
+// 简单并发限制器，最多同时 CONCURRENCY 个请求
+const CONCURRENCY = 5;
+async function pLimit<T>(tasks: (() => Promise<T>)[]): Promise<T[]> {
+	const results: T[] = [];
+	let i = 0;
+	async function worker() {
+		while (i < tasks.length) {
+			const idx = i++;
+			results[idx] = await tasks[idx]();
+		}
+	}
+	await Promise.all(Array.from({ length: CONCURRENCY }, worker));
+	return results;
+}
+
 // 获取单个条目相关人员信息
 async function fetchSubjectPersons(subjectId: number) {
 	try {
@@ -72,9 +87,9 @@ async function fetchBangumiCollection(
 async function processBangumiData(data: any, status: string) {
 	if (!data || !data.data) return [];
 
-	// 为每个条目获取详细信息
-	const detailedItems = await Promise.all(
-		data.data.map(async (item: any) => {
+	// 为每个条目获取详细信息（限制并发数，避免打爆 Bangumi API）
+	const detailedItems = await pLimit(
+		data.data.map((item: any) => async () => {
 			// 获取相关人员信息
 			const subjectPersons = await fetchSubjectPersons(item.subject_id);
 			// 获取年份信息

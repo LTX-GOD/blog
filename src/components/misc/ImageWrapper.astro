@@ -61,10 +61,11 @@ if (isLocal) {
 	}
 }
 
-const imageClass = "w-full h-full object-cover";
+const isLazy = loading === 'lazy';
+const imageClass = `w-full h-full object-cover${isLazy ? ' img-fade-in' : ''}`;
 const imageStyle = `object-position: ${position}`;
 ---
-<div id={id} class:list={[className, 'overflow-hidden relative']}>
+<div id={id} class:list={[className, 'overflow-hidden relative', { 'img-wrap': isLazy }]}>
     <div class="transition absolute inset-0 dark:bg-black/10 bg-opacity-50 pointer-events-none"></div>
     {isLocal && img && (
         <Image
@@ -93,3 +94,25 @@ const imageStyle = `object-position: ${position}`;
         />
     )}
 </div>
+
+<script>
+function initImgFadeIn() {
+    document.querySelectorAll<HTMLImageElement>('.img-fade-in').forEach(img => {
+        if (img.complete) {
+            img.classList.add('img-loaded');
+        } else {
+            const onDone = () => img.classList.add('img-loaded');
+            img.addEventListener('load', onDone, { once: true });
+            img.addEventListener('error', onDone, { once: true });
+        }
+    });
+}
+initImgFadeIn();
+if ((window as any).swup) {
+    (window as any).swup.hooks.on('content:replace', initImgFadeIn);
+} else {
+    document.addEventListener('swup:enable', () => {
+        (window as any).swup.hooks.on('content:replace', initImgFadeIn);
+    }, { once: true });
+}
+</script>

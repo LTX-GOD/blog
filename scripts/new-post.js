@@ -50,8 +50,7 @@ pinned: false
 tags: []
 author: zsm
 category: ''
-draft: false 
-licenseName: "MIT"
+draft: false
 lang: 'zh_CN'
 ---
 `

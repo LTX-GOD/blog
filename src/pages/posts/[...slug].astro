@@ -21,13 +21,18 @@ import { profileConfig, siteConfig } from "../../config";
 import { formatDateToYYYYMMDD } from "../../utils/date-utils";
 export async function getStaticPaths() {
 	const blogEntries = await getSortedPosts();
-	return blogEntries.map((entry) => ({
+	return blogEntries.map((entry, index) => ({
 		params: { slug: entry.slug },
-		props: { entry },
+		props: {
+			entry,
+			// sorted newest-first: index-1 is newer (next), index+1 is older (prev)
+			nextPost: index > 0 ? blogEntries[index - 1] : null,
+			prevPost: index < blogEntries.length - 1 ? blogEntries[index + 1] : null,
+		},
 	}));
 }
 
-const { entry } = Astro.props;
+const { entry, prevPost, nextPost } = Astro.props;
 const { Content, headings, remarkPluginFrontmatter } = await entry.render();
 
 // 处理加密逻辑
@@ -216,7 +221,9 @@ const jsonLd = {
     </div>
 
     <!-- 评论 -->
-    <Comment post={entry} />
+    <div id="post-comments">
+        <Comment post={entry} />
+    </div>
 
     {siteConfig.showLastModified && (
         <>
@@ -329,26 +336,25 @@ const jsonLd = {
     )}
 
     <div
+        id="post-nav"
         class="flex flex-col md:flex-row justify-between mb-4 gap-4 overflow-hidden w-full"
     >
         <a
-            href={entry.data.nextSlug
-                ? getPostUrlBySlug(entry.data.nextSlug)
-                : "#"}
+            href={nextPost ? getPostUrlBySlug(nextPost.slug) : "#"}
             class:list={[
                 "w-full font-bold overflow-hidden active:scale-95",
-                { "pointer-events-none": !entry.data.nextSlug },
+                { "pointer-events-none": !nextPost },
             ]}
         >
             {
-                entry.data.nextSlug && (
+                nextPost && (
                     <div class="btn-card rounded-2xl w-full h-[3.75rem] max-w-full px-4 flex items-center !justify-start gap-4">
                         <Icon
                             name="material-symbols:chevron-left-rounded"
                             class="text-[2rem] text-[var(--primary)]"
                         />
                         <div class="overflow-hidden transition overflow-ellipsis whitespace-nowrap max-w-[calc(100%_-_3rem)] text-black/75 dark:text-white/75">
-                            {entry.data.nextTitle}
+                            {nextPost.data.title}
                         </div>
                     </div>
                 )
@@ -356,19 +362,17 @@ const jsonLd = {
         </a>
 
         <a
-            href={entry.data.prevSlug
-                ? getPostUrlBySlug(entry.data.prevSlug)
-                : "#"}
+            href={prevPost ? getPostUrlBySlug(prevPost.slug) : "#"}
             class:list={[
                 "w-full font-bold overflow-hidden active:scale-95",
-                { "pointer-events-none": !entry.data.prevSlug },
+                { "pointer-events-none": !prevPost },
             ]}
         >
             {
-                entry.data.prevSlug && (
+                prevPost && (
                     <div class="btn-card rounded-2xl w-full h-[3.75rem] max-w-full px-4 flex items-center !justify-end gap-4">
                         <div class="overflow-hidden transition overflow-ellipsis whitespace-nowrap max-w-[calc(100%_-_3rem)] text-black/75 dark:text-white/75">
-                            {entry.data.prevTitle}
+                            {prevPost.data.title}
                         </div>
                         <Icon
                             name="material-symbols:chevron-right-rounded"

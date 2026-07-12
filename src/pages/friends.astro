@@ -153,6 +153,37 @@ function shuffleArray(array) {
 
 const shuffledItems = shuffleArray(items);
 ---
+<script>
+function generateAvatar(name: string): string {
+    const initial = name.charAt(0).toUpperCase();
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+        hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const hue = Math.abs(hash) % 360;
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><rect width="64" height="64" fill="hsl(${hue},55%,50%)"/><text x="32" y="44" text-anchor="middle" font-size="28" font-family="monospace" fill="white" font-weight="bold">${initial}</text></svg>`;
+    return `data:image/svg+xml,${encodeURIComponent(svg)}`;
+}
+
+function initFallbacks() {
+    document.querySelectorAll<HTMLImageElement>('.friend-avatar').forEach(img => {
+        img.addEventListener('error', function() {
+            this.onerror = null;
+            this.src = generateAvatar(this.dataset.name ?? '?');
+        });
+    });
+}
+
+initFallbacks();
+if ((window as any).swup) {
+    (window as any).swup.hooks.on('content:replace', initFallbacks);
+} else {
+    document.addEventListener('swup:enable', () => {
+        (window as any).swup.hooks.on('content:replace', initFallbacks);
+    }, { once: true });
+}
+</script>
+
 <MainGridLayout title={i18n(I18nKey.friends)} description={i18n(I18nKey.friends)}>
     <div class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32">
         <div class="card-base z-10 px-9 py-6 relative w-full ">
@@ -161,7 +192,7 @@ const shuffledItems = shuffleArray(items);
                     <div class="flex flex-col h-auto gap-4 rounded-[var(--radius-large)] border border-black/10 dark:border-white/10 p-4 bg-[var(--card-bg)] transition-all duration-300 hover:border-[var(--primary)] hover:shadow-lg group">
                         <div class="flex items-start gap-4">
                             <div class="w-16 h-16 flex-shrink-0 rounded-sm overflow-hidden border border-black/20 dark:border-white/20 group-hover:border-[var(--primary)] transition-colors">
-                                <img src={item.imgurl} alt="Avatar" class="w-full h-full object-cover">
+                                <img src={item.imgurl} alt="Avatar" class="friend-avatar w-full h-full object-cover" data-name={item.title}>
                             </div>
                             <div class="grow">
                                 <div class="flex items-center justify-between mb-1">

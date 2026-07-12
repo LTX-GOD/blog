@@ -60,7 +60,12 @@ const umamiBaseUrl = umamiConfig.baseUrl;
             if (!umamiConfig.statsEnabled) {
                 return;
             }
-            
+
+            if (typeof getUmamiWebsiteStats !== 'function') {
+                console.warn('umami-share.js not loaded yet, skipping stats fetch');
+                return;
+            }
+
             try {
                 // 调用全局工具获取 Umami 统计数据
                 const stats = await getUmamiWebsiteStats(umamiBaseUrl, umamiApiKey, umamiWebsiteId);

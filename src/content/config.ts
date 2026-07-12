@@ -2,6 +2,10 @@ import { defineCollection, z } from "astro:content";
 import { processCodeBlocks } from '../lib/shiki/process';
 import { renderWithCache } from '../lib/shiki/renderer';
 
+type CollectionConfig = Parameters<typeof defineCollection>[0] & {
+	transform?: (entry: { body?: string; [key: string]: unknown }) => Promise<{ body?: string; [key: string]: unknown }>;
+};
+
 const postsCollection = defineCollection({
 	schema: z.object({
 		title: z.string(),
@@ -23,15 +27,7 @@ const postsCollection = defineCollection({
 		encrypted: z.boolean().optional().default(false),
 		password: z.string().optional().default(""),
 
-
-
-		/* For internal use */
-		prevTitle: z.string().default(""),
-		prevSlug: z.string().default(""),
-		nextTitle: z.string().default(""),
-		nextSlug: z.string().default(""),
 	}),
-	// @ts-ignore
 	transform: async (entry) => {
 		if (!entry.body) return entry;
 		const newBody = await processCodeBlocks(entry.body, renderWithCache);
@@ -40,7 +36,7 @@ const postsCollection = defineCollection({
 			body: newBody,
 		};
 	},
-});
+} as CollectionConfig);
 const specCollection = defineCollection({
 	schema: z.object({}),
 });

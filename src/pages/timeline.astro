@@ -16,8 +16,6 @@ import TimelineHistory from "../components/timeline/TimelineHistory.astro";
 import TimelineCharts from "../components/timeline/TimelineCharts.astro";
 import { getTypeIcon, formatDate, getDuration } from "../utils/timeline-utils";
 
-const { lang } = Astro.props;
-
 // 收集所有时间线图标用于预加载
 const allIcons = timelineData
 	.map((item) => item.icon || getTypeIcon(item.type))

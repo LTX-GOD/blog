@@ -4,10 +4,9 @@ import { pluginCollapsibleSections } from '@expressive-code/plugin-collapsible-s
 import { pluginLineNumbers } from '@expressive-code/plugin-line-numbers';
 import { pluginFrames } from '@expressive-code/plugin-frames';
 import { pluginTextMarkers } from '@expressive-code/plugin-text-markers';
-// @ts-ignore
 import { pluginCustomCopyButton } from '../../plugins/expressive-code/custom-copy-button.ts';
-// @ts-ignore
 import { pluginLanguageBadge } from '../../plugins/expressive-code/language-badge.ts';
+import { EC_DEFAULT_PROPS, EC_BASE_STYLE_OVERRIDES } from './ec-config';
 import { getCodeHash } from './hash';
 import { bundledThemes } from 'shiki';
 import fs from 'node:fs';
@@ -70,25 +69,8 @@ async function getEc() {
             pluginLanguageBadge(),
             pluginCustomCopyButton(),
         ],
-        defaultProps: {
-            wrap: true,
-            overridesByLang: {
-                shellsession: { showLineNumbers: false },
-                // @ts-ignore
-                bash: { frame: 'code' },
-                // @ts-ignore
-                shell: { frame: 'code' },
-                // @ts-ignore
-                sh: { frame: 'code' },
-                // @ts-ignore
-                zsh: { frame: 'code' },
-            },
-        },
-        styleOverrides: {
-            codeBackground: "var(--codeblock-bg)",
-            borderRadius: "0.75rem",
-            borderColor: "none",
-        }
+        defaultProps: EC_DEFAULT_PROPS,
+        styleOverrides: EC_BASE_STYLE_OVERRIDES,
     });
     return ec;
 }

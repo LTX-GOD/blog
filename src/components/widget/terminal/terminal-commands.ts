@@ -41,7 +41,7 @@ projects/`,
 					return `cat: ${file}: No such file or directory`;
 			}
 		},
-		whoami: () => `visitor@${navigator.userAgent}`,
+		whoami: () => "visitor",
 		date: () => new Date().toString(),
 		clear: () => "",
 		uname: () => "Linux zsm-blog 5.15.0-generic #1 SMP x86_64 GNU/Linux",

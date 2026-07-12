@@ -16,6 +16,7 @@ import remarkGithubAdmonitionsToDirectives from "remark-github-admonitions-to-di
 import remarkMath from "remark-math";
 import remarkSectionize from "remark-sectionize";
 import { expressiveCodeConfig, siteConfig } from "./src/config.ts";
+import { EC_DEFAULT_PROPS, EC_BASE_STYLE_OVERRIDES } from "./src/lib/shiki/ec-config.ts";
 import { pluginCustomCopyButton } from "./src/plugins/expressive-code/custom-copy-button.js";
 import { pluginLanguageBadge } from "./src/plugins/expressive-code/language-badge.ts";
 import { AdmonitionComponent } from "./src/plugins/rehype-component-admonition.mjs";
@@ -75,30 +76,9 @@ export default defineConfig({
 				pluginLanguageBadge(),
 				pluginCustomCopyButton(),
 			],
-			defaultProps: {
-				wrap: true,
-				overridesByLang: {
-					shellsession: {
-						showLineNumbers: false,
-					},
-					bash: {
-						frame: 'code',
-					},
-					shell: {
-						frame: 'code',
-					},
-					sh: {
-						frame: 'code',
-					},
-					zsh: {
-						frame: 'code',
-					},
-				},
-			},
+			defaultProps: EC_DEFAULT_PROPS,
 			styleOverrides: {
-				codeBackground: "var(--codeblock-bg)",
-				borderRadius: "0.75rem",
-				borderColor: "none",
+				...EC_BASE_STYLE_OVERRIDES,
 				codeFontSize: "0.875rem",
 				codeFontFamily:
 					"'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",

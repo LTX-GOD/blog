@@ -6,7 +6,7 @@ description: ccb zsm wp
 pinned: false
 tags: ["web"]
 author: zsm
-category: ctf-web
+category: CTF-web
 draft: false
 licenseName: "MIT"
 lang: "zh_CN"

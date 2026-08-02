@@ -3,6 +3,21 @@
         @apply text-3xl;
     }
 
+    /* Editorial hierarchy: serif display headings, tightened tracking */
+    h1,
+    h2,
+    h3,
+    h4 {
+        font-family: var(--font-serif);
+        letter-spacing: -0.015em;
+        line-height: 1.25;
+    }
+
+    /* Reading rhythm: looser leading, comfortable measure */
+    p {
+        line-height: 1.8;
+    }
+
     h1,
     h2,
     h3,
@@ -161,7 +176,7 @@
     > ul,
     > ol,
     > blockquote {
-        max-width: 72ch;
+        max-width: 70ch;
     }
 
 }

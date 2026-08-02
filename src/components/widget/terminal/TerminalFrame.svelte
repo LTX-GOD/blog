@@ -36,7 +36,7 @@
 		"p-4",
 		"overflow-y-auto",
 		"text-black/80",
-		"dark:text-[#a9b1d6]",
+		"dark:text-[#908caa]",
 		"scrollbar-hide",
 		fullScreen ? "h-[min(70vh,42rem)] sm:h-[min(72vh,44rem)]" : "h-64",
 		contentClass,
@@ -67,14 +67,14 @@
 </script>
 
 <div class={frameClass} on:click={focusInput}>
-	<div class="terminal-window rounded-xl overflow-hidden border border-black/5 dark:border-white/10 shadow-sm dark:shadow-2xl bg-white/50 dark:bg-[#1a1b26]/90 backdrop-blur-md">
-		<div class="flex items-center justify-between px-4 py-2 bg-black/5 dark:bg-[#1f2335]/90 border-b border-black/5 dark:border-white/10 transition-colors duration-300">
+	<div class="terminal-window rounded-xl overflow-hidden border border-black/5 dark:border-white/10 shadow-sm dark:shadow-2xl bg-white/50 dark:bg-[#191724]/90 backdrop-blur-md">
+		<div class="flex items-center justify-between px-4 py-2 bg-black/5 dark:bg-[#1f1d2e]/90 border-b border-black/5 dark:border-white/10 transition-colors duration-300">
 			<div class="flex gap-2">
 				<div class="w-3 h-3 rounded-full bg-[#ff5f56]"></div>
 				<div class="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
 				<div class="w-3 h-3 rounded-full bg-[#27c93f]"></div>
 			</div>
-			<div class="text-black/50 dark:text-[#a9b1d6] text-xs">{titleLabel}</div>
+			<div class="text-black/50 dark:text-[#908caa] text-xs">{titleLabel}</div>
 			<div class="w-10"></div>
 		</div>
 
@@ -85,7 +85,7 @@
 
 			{#if interactive}
 				<div class="flex items-center">
-					<span class="text-[var(--primary)] dark:text-[#7aa2f7] mr-2">
+					<span class="text-[var(--primary)] dark:text-[#c4a7e7] mr-2">
 						{promptLabel}
 					</span>
 					<input
@@ -94,7 +94,7 @@
 						on:keydown={onKeydown}
 						type="text"
 						aria-label={inputAriaLabel}
-						class="bg-transparent border-none outline-none flex-grow text-black dark:text-[#c0caf5] caret-[var(--primary)] dark:caret-[#7aa2f7]"
+						class="bg-transparent border-none outline-none flex-grow text-black dark:text-[#e0def4] caret-[var(--primary)] dark:caret-[#c4a7e7]"
 						autocomplete="off"
 						spellcheck="false"
 					/>

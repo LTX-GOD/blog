@@ -23,52 +23,53 @@ define(vars)
         {key}: value[1]
 
 define({
-  --primary: oklch(0.65 0.18 260) oklch(0.65 0.18 260) // #7aa2f7 (Tokyonight Blue)
-  --page-bg: #e1e2e7 #1a1b26 // Tokyonight Night BG
-  --card-bg: rgba(255, 255, 255, 0.75) rgba(36, 40, 59, 0.75) // Tokyonight Storm BG (Translucent)
-  --card-bg-transparent: rgba(255, 255, 255, 0.6) rgba(36, 40, 59, 0.6)
+  // ── Rosé Pine ── Dawn (light) / Main (dark), iris accent ──
+  --primary: #907aa9 #c4a7e7 // iris
+  --page-bg: #faf4ed #191724 // base
+  --card-bg: rgba(255, 250, 243, 0.75) rgba(31, 29, 46, 0.75) // surface (translucent)
+  --card-bg-transparent: rgba(255, 250, 243, 0.6) rgba(31, 29, 46, 0.6)
 
-  --btn-content: #373b41 #c0caf5
+  --btn-content: #575279 #e0def4 // text
   
-  --btn-regular-bg: rgba(240, 240, 240, 0.8) rgba(65, 72, 104, 0.8)
-  --btn-regular-bg-hover: rgba(224, 224, 224, 0.8) rgba(86, 95, 137, 0.8)
-  --btn-regular-bg-active: rgba(208, 208, 208, 0.8) rgba(36, 40, 59, 0.8)
+  --btn-regular-bg: rgba(242, 233, 225, 0.8) rgba(38, 35, 58, 0.8) // overlay
+  --btn-regular-bg-hover: rgba(223, 218, 217, 0.8) rgba(64, 61, 82, 0.8) // highlight med
+  --btn-regular-bg-active: rgba(206, 202, 205, 0.8) rgba(82, 79, 103, 0.8) // highlight high
 
-  --btn-plain-bg-hover: rgba(240, 240, 240, 0.8) rgba(65, 72, 104, 0.8)
-  --btn-plain-bg-active: rgba(224, 224, 224, 0.8) rgba(36, 40, 59, 0.8)
+  --btn-plain-bg-hover: rgba(242, 233, 225, 0.8) rgba(38, 35, 58, 0.8)
+  --btn-plain-bg-active: rgba(223, 218, 217, 0.8) rgba(64, 61, 82, 0.8)
 
-  --btn-card-bg-hover: rgba(248, 248, 248, 0.8) rgba(65, 72, 104, 0.8)
-  --btn-card-bg-active: rgba(240, 240, 240, 0.8) rgba(36, 40, 59, 0.8)
+  --btn-card-bg-hover: rgba(255, 250, 243, 0.8) rgba(38, 35, 58, 0.8)
+  --btn-card-bg-active: rgba(242, 233, 225, 0.8) rgba(64, 61, 82, 0.8)
 
   --enter-btn-bg: var(--btn-regular-bg)
   --enter-btn-bg-hover: var(--btn-regular-bg-hover)
   --enter-btn-bg-active: var(--btn-regular-bg-active)
 
-  --deep-text: #1a1b26 #a9b1d6
+  --deep-text: #575279 #e0def4 // text
 
-  --title-active: #7aa2f7 #7aa2f7
+  --title-active: #907aa9 #c4a7e7 // iris
 
-  --line-divider: rgba(0, 0, 0, 0.1) rgba(255, 255, 255, 0.1)
+  --line-divider: rgba(87, 82, 121, 0.1) rgba(224, 222, 244, 0.1)
 
-  --line-color: rgba(0, 0, 0, 0.1) rgba(255, 255, 255, 0.1)
-  --meta-divider: rgba(0, 0, 0, 0.2) rgba(255, 255, 255, 0.2)
-  --content-meta: rgba(0, 0, 0, 0.6) #565f89
+  --line-color: rgba(87, 82, 121, 0.1) rgba(224, 222, 244, 0.1)
+  --meta-divider: rgba(87, 82, 121, 0.2) rgba(224, 222, 244, 0.2)
+  --content-meta: rgba(87, 82, 121, 0.7) #908caa // subtle
 
-  --inline-code-bg: rgba(224, 224, 224, 0.8) rgba(65, 72, 104, 0.8)
-  --inline-code-color: #7aa2f7 #7dcfff
-  --selection-bg: #c0caf5 #515c7e
-  --codeblock-selection: #515c7e
-  --codeblock-bg: rgba(240, 240, 240, 0.8) rgba(13, 17, 23, 0.97)
-  --codeblock-topbar-bg: rgba(224, 224, 224, 0.8) rgba(22, 27, 34, 0.97)
-  --codeblock-border: rgba(0, 0, 0, 0.06) rgba(255, 255, 255, 0.08)
+  --inline-code-bg: rgba(242, 233, 225, 0.9) rgba(38, 35, 58, 0.9) // overlay
+  --inline-code-color: #286983 #9ccfd8 // pine / foam
+  --selection-bg: #dfdad9 #403d52 // highlight
+  --codeblock-selection: #403d52
+  --codeblock-bg: rgba(242, 233, 225, 0.8) rgba(25, 23, 36, 0.97) // base
+  --codeblock-topbar-bg: rgba(223, 218, 217, 0.8) rgba(31, 29, 46, 0.97) // surface
+  --codeblock-border: rgba(87, 82, 121, 0.08) rgba(224, 222, 244, 0.08)
 
   --license-block-bg: rgba(0, 0, 0, 0.03) rgba(0, 0, 0, 0.2)
 
-  --link-underline: #7aa2f7 #7aa2f7
-  --link-hover: #7aa2f7 #7aa2f7
-  --link-active: #bb9af7 #bb9af7
+  --link-underline: #907aa9 #c4a7e7 // iris
+  --link-hover: #907aa9 #c4a7e7 // iris
+  --link-active: #d7827e #ebbcba // rose
 
-  --float-panel-bg: rgba(255, 255, 255, 0.8) rgba(31, 35, 53, 0.8)
+  --float-panel-bg: rgba(255, 250, 243, 0.85) rgba(31, 29, 46, 0.85) // surface
 
   --scrollbar-bg-light: rgba(0, 0, 0, 0.4)
   --scrollbar-bg-hover-light: rgba(0, 0, 0, 0.5)
@@ -87,16 +88,16 @@ define({
   --display-light-icon: 1 0
   --display-dark-icon: 0 1
 
-  --admonitions-color-tip: #7aa2f7 #7aa2f7
-  --admonitions-color-note: #7dcfff #7dcfff
-  --admonitions-color-important: #bb9af7 #bb9af7
-  --admonitions-color-warning: #e0af68 #e0af68
-  --admonitions-color-caution: #f7768e #f7768e
+  --admonitions-color-tip: #286983 #31748f // pine
+  --admonitions-color-note: #56949f #9ccfd8 // foam
+  --admonitions-color-important: #907aa9 #c4a7e7 // iris
+  --admonitions-color-warning: #ea9d34 #f6c177 // gold
+  --admonitions-color-caution: #b4637a #eb6f92 // love
 
-  --toc-badge-bg: rgba(224, 224, 224, 0.8) rgba(65, 72, 104, 0.8)
-  --toc-btn-hover: rgba(208, 208, 208, 0.8) rgba(86, 95, 137, 0.8)
-  --toc-btn-active: rgba(192, 192, 192, 0.8) rgba(65, 72, 104, 0.8)
+  --toc-badge-bg: rgba(242, 233, 225, 0.8) rgba(38, 35, 58, 0.8)
+  --toc-btn-hover: rgba(223, 218, 217, 0.8) rgba(64, 61, 82, 0.8)
+  --toc-btn-active: rgba(206, 202, 205, 0.8) rgba(82, 79, 103, 0.8)
   --toc-width: calc((100vw - var(--page-width)) / 2 - 1rem)
-  --toc-item-active: #7aa2f7 #7aa2f7
+  --toc-item-active: #907aa9 #c4a7e7 // iris
 })
 

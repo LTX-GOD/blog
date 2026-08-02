@@ -1,6 +1,9 @@
 ---
 import type { MarkdownHeading } from "astro";
-import { widgetManager } from "../../utils/widget-manager";
+import {
+	getComponentClass,
+	getComponentStyle,
+} from "../../utils/widget-manager";
 import Announcement from "./Announcement.astro";
 import Categories from "./Categories.astro";
 import Profile from "./Profile.astro";
@@ -32,8 +35,8 @@ function renderComponent(component: any, index: number, _components: any[]) {
 		componentMap[component.type as keyof typeof componentMap];
 	if (!ComponentToRender) return null;
 
-	const componentClass = widgetManager.getComponentClass(component, index);
-	const componentStyle = widgetManager.getComponentStyle(component, index);
+	const componentClass = getComponentClass(component);
+	const componentStyle = getComponentStyle(component, index);
 
 	return {
 		Component: ComponentToRender,
@@ -98,10 +101,10 @@ function renderComponent(component: any, index: number, _components: any[]) {
 </style>
 
 <script>
-	import { widgetManager } from "../../utils/widget-manager";
+	import { getBreakpoints, shouldShowSidebar } from "../../utils/widget-manager";
 
 	function updateResponsiveDisplay() {
-		const breakpoints = widgetManager.getBreakpoints();
+		const breakpoints = getBreakpoints();
 		const width = window.innerWidth;
 
 		let deviceType: 'mobile' | 'tablet' | 'desktop';
@@ -113,7 +116,7 @@ function renderComponent(component: any, index: number, _components: any[]) {
 			deviceType = 'desktop';
 		}
 
-		const shouldShow = widgetManager.shouldShowSidebar(deviceType);
+		const shouldShow = shouldShowSidebar(deviceType);
 		const sidebar = document.getElementById('sidebar');
 		if (sidebar) {
 			sidebar.style.setProperty(

@@ -20,7 +20,10 @@ import {
 	BANNER_HEIGHT_EXTEND,
 	MAIN_PANEL_OVERLAPS_BANNER_HEIGHT,
 } from "../constants/constants";
-import { widgetManager } from "../utils/widget-manager";
+import {
+	getComponentsByPosition,
+	shouldShowSidebar,
+} from "../utils/widget-manager";
 import Layout from "./Layout.astro";
 
 interface Props {
@@ -126,11 +129,11 @@ const globalSidebarEnabled = sidebarLayoutConfig.enable;
 const sidebarPosition = sidebarLayoutConfig.position || "left";
 // 响应式配置：不同设备上的侧边栏显示状态
 const mobileShowSidebar =
-	globalSidebarEnabled && widgetManager.shouldShowSidebar("mobile");
+	globalSidebarEnabled && shouldShowSidebar("mobile");
 const tabletShowSidebar =
-	globalSidebarEnabled && widgetManager.shouldShowSidebar("tablet");
+	globalSidebarEnabled && shouldShowSidebar("tablet");
 const desktopShowSidebar =
-	globalSidebarEnabled && widgetManager.shouldShowSidebar("desktop");
+	globalSidebarEnabled && shouldShowSidebar("desktop");
 
 // 动态网格布局类名 - 根据侧边栏位置调整列宽
 const gridCols = `
@@ -171,8 +174,8 @@ const transparentClass = shouldEnableTransparency
 	: "";
 
 // 获取侧边栏组件配置
-const topComponents = widgetManager.getComponentsByPosition("top");
-const stickyComponents = widgetManager.getComponentsByPosition("sticky");
+const topComponents = getComponentsByPosition("top");
+const stickyComponents = getComponentsByPosition("sticky");
 ---
 
 <Layout title={title} banner={banner} description={description} lang={lang} setOGTypeArticle={setOGTypeArticle} postSlug={postSlug}>
